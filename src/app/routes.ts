@@ -6,10 +6,10 @@ import Layout from './components/Layout.vue'
 // APP PAGES
 import Home from './pages/Home.vue'
 import Berita from './pages/Berita.vue'
-// import BahayaGadget from './pages/BahayaGadget.vue'
-// import PenggantiGadget from './pages/PenggantiGadget.vue'
-// import Panduan from './pages/Panduan.vue'
-// import VideoEdukasi from './pages/VideoEdukasi.vue'
+import BahayaGadget from './pages/BahayaGadget.vue'
+import PenggantiGadget from './pages/PenggantiGadget.vue'
+import Panduan from './pages/Panduan.vue'
+import VideoEdukasi from './pages/VideoEdukasi.vue'
 // import AboutUs from './pages/AboutUs.vue'
 import ArtikelDetail from './pages/ArtikelDetail.vue'
 
@@ -39,26 +39,26 @@ const routes = [
         name: 'berita',
         component: Berita,
       },
-      //   {
-      //     path: 'bahaya-gadget',
-      //     name: 'bahaya-gadget',
-      //     component: BahayaGadget,
-      //   },
-      //   {
-      //     path: 'pengganti-gadget',
-      //     name: 'pengganti-gadget',
-      //     component: PenggantiGadget,
-      //   },
-      //   {
-      //     path: 'panduan',
-      //     name: 'panduan',
-      //     component: Panduan,
-      //   },
-      //   {
-      //     path: 'video-edukasi',
-      //     name: 'video-edukasi',
-      //     component: VideoEdukasi,
-      //   },
+      {
+        path: 'bahaya-gadget',
+        name: 'bahaya-gadget',
+        component: BahayaGadget,
+      },
+      {
+        path: 'pengganti-gadget',
+        name: 'pengganti-gadget',
+        component: PenggantiGadget,
+      },
+      {
+        path: 'panduan',
+        name: 'panduan',
+        component: Panduan,
+      },
+      {
+        path: 'video-edukasi',
+        name: 'video-edukasi',
+        component: VideoEdukasi,
+      },
       //   {
       //     path: 'about',
       //     name: 'about',

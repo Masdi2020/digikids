@@ -1,0 +1,395 @@
+<script setup lang="ts">
+import { ref, computed } from "vue";
+import {
+  Play,
+  X,
+  Clock,
+  Eye,
+  ChevronRight,
+  Search,
+  ThumbsUp
+} from "lucide-vue-next";
+
+const vidImg1 = "https://images.unsplash.com/photo-1758873272808-5580ed7deb44?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=800";
+const vidImg2 = "https://images.unsplash.com/photo-1505976442149-53a82393903b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=800";
+const vidImg3 = "https://images.unsplash.com/photo-1647188443883-9be7cee25341?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=800";
+const vidImg4 = "https://images.unsplash.com/photo-1758687126549-3bfd368e59a8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=800";
+const vidImg5 = "https://images.unsplash.com/photo-1761986758458-205d30cc9135?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=800";
+const vidImg6 = "https://images.unsplash.com/photo-1583238829785-7ba8a888bb72?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=800";
+const vidImg7 = "https://images.unsplash.com/flagged/photo-1551887373-6edba6dacbb1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=800";
+const vidImg8 = "https://images.unsplash.com/photo-1609173706484-78700d4ed198?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=800";
+const vidImg9 = "https://images.unsplash.com/photo-1652688898581-8f4878c942e5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=800";
+
+interface Video {
+  id: number;
+  title: string;
+  duration: string;
+  views: string;
+  likes: string;
+  category: string;
+  tag: string;
+  img: string;
+  youtubeId: string;
+  featured?: boolean;
+}
+
+const categories = [
+  "Semua",
+  "Untuk Orang Tua",
+  "Untuk Anak",
+  "Parental Control",
+  "Kesehatan",
+  "Aktivitas"
+];
+
+const videos: Video[] = [
+  {
+    id: 1,
+    title: "Mengapa Screen Time Berlebih Berbahaya? Penjelasan Dokter Anak",
+    duration: "12:34",
+    views: "24.5K",
+    likes: "1.2K",
+    category: "Untuk Orang Tua",
+    tag: "🩺 Dokter",
+    img: vidImg1,
+    youtubeId: "dQw4w9WgXcQ",
+    featured: true,
+  },
+  {
+    id: 2,
+    title: "Cara Mengatur Google Family Link untuk Anak",
+    duration: "08:15",
+    views: "18.3K",
+    likes: "956",
+    category: "Parental Control",
+    tag: "🔒 Tutorial",
+    img: vidImg2,
+    youtubeId: "dQw4w9WgXcQ",
+  },
+  {
+    id: 3,
+    title: "Dampak Gadget pada Perkembangan Otak Anak Usia Dini",
+    duration: "15:22",
+    views: "31.7K",
+    likes: "2.1K",
+    category: "Kesehatan",
+    tag: "🧠 Ilmiah",
+    img: vidImg3,
+    youtubeId: "dQw4w9WgXcQ",
+  },
+  {
+    id: 4,
+    title: "5 Cara Seru Mengalihkan Anak dari Gadget",
+    duration: "07:48",
+    views: "42.1K",
+    likes: "3.4K",
+    category: "Aktivitas",
+    tag: "🎮 Tips",
+    img: vidImg4,
+    youtubeId: "dQw4w9WgXcQ",
+  },
+  {
+    id: 5,
+    title: "Panduan Lengkap Screen Time untuk Anak 3-12 Tahun",
+    duration: "18:56",
+    views: "15.9K",
+    likes: "887",
+    category: "Untuk Orang Tua",
+    tag: "📋 Panduan",
+    img: vidImg5,
+    youtubeId: "dQw4w9WgXcQ",
+  },
+  {
+    id: 6,
+    title: "Aktivitas Seni Kreatif untuk Anak tanpa Gadget",
+    duration: "09:30",
+    views: "28.4K",
+    likes: "1.8K",
+    category: "Aktivitas",
+    tag: "🎨 Kreatif",
+    img: vidImg6,
+    youtubeId: "dQw4w9WgXcQ",
+  },
+  {
+    id: 7,
+    title: "Membaca Bersama Anak: Manfaat & Cara Memulai",
+    duration: "06:12",
+    views: "11.2K",
+    likes: "743",
+    category: "Untuk Anak",
+    tag: "📚 Literasi",
+    img: vidImg7,
+    youtubeId: "dQw4w9WgXcQ",
+  },
+  {
+    id: 8,
+    title: "Kisah Nyata: Keluarga Berhasil Lepas dari Kecanduan Gadget",
+    duration: "21:05",
+    views: "56.8K",
+    likes: "4.7K",
+    category: "Untuk Orang Tua",
+    tag: "❤️ Kisah Nyata",
+    img: vidImg8,
+    youtubeId: "dQw4w9WgXcQ",
+  },
+  {
+    id: 9,
+    title: "Olahraga Seru untuk Anak di Rumah Tanpa Peralatan",
+    duration: "13:20",
+    views: "19.6K",
+    likes: "1.3K",
+    category: "Aktivitas",
+    tag: "⚽ Olahraga",
+    img: vidImg9,
+    youtubeId: "dQw4w9WgXcQ",
+  },
+];
+
+const activeCategory = ref("Semua");
+const search = ref("");
+const selectedVideo = ref<Video | null>(null);
+
+const filtered = computed(() =>
+  videos.filter((v) => {
+    const matchCat = activeCategory.value === "Semua" || v.category === activeCategory.value;
+    const matchSearch = v.title.toLowerCase().includes(search.value.toLowerCase());
+    return matchCat && matchSearch;
+  })
+)
+
+const featured = computed(() => filtered.value.find((v) => !v.featured) ?? null);
+const rest = computed(() => filtered.value.filter((v) => !v.featured))
+</script>
+
+<template>
+  <div class="bg-slate-50 min-h-screen">
+
+    <!-- Page Header -->
+    <div class="bg-gradient-to-br from-amber-500 to-orange-600 py-14">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center gap-2 text-amber-200 text-sm mb-3">
+          <span>Beranda</span>
+          <ChevronRight class="w-4 h-4" />
+          <span class="text-white font-medium">Video Edukasi</span>
+        </div>
+        <h1 class="text-3xl lg:text-4xl font-black text-white mb-2">
+          Video Edukasi
+        </h1>
+        <p class="text-amber-100 text-sm max-w-xl">
+          Koleksi video informatif tentang penggunaan gadget yang bijak, parental
+          control, dan aktivitas alternatif untuk anak.
+        </p>
+      </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+      <!-- Search + Filter -->
+      <div class="flex flex-col sm:flex-row gap-4 mb-8">
+        <div class="relative flex-1 max-w-md">
+          <Search class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <input
+            v-model="search"
+            type="text"
+            placeholder="Cari video..."
+            class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent"
+          />
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <button
+            v-for="cat in categories"
+            :key="cat"
+            @click="activeCategory = cat"
+            :class="[
+              'px-4 py-2 rounded-xl text-sm font-medium transition-all',
+              activeCategory === cat
+                ? 'bg-amber-500 text-white shadow-md'
+                : 'bg-white text-slate-600 border border-slate-200 hover:border-amber-300 hover:text-amber-600'
+            ]"
+          >
+            {{ cat }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Featured Video -->
+      <div v-if="featured" class="mb-8">
+        <h2 class="text-sm font-bold text-amber-700 uppercase tracking-wide mb-4 flex items-center gap-2">
+          Video Pilihan Utama
+        </h2>
+        <div
+          class="relative bg-slate-900 rounded-2xl overflow-hidden cursor-pointer group shadow-xl"
+          @click="selectedVideo = featured"
+        >
+          <img
+            :src="featured.img"
+            :alt="featured.title"
+            class="w-full h-72 lg:h-96 object-cover opacity-70 group-hover:opacity-60 group-hover:scale-105 transition-all duration-500"
+          />
+          <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+          <!-- Play Button -->
+          <div class="absolute inset-0 flex items-center justify-center">
+            <div class="w-20 h-20 bg-amber-500/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform">
+              <Play class="w-9 h-9 text-white fill-white ml-1.5" />
+            </div>
+          </div>
+          <div class="absolute bottom-6 left-6 right-6">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="bg-amber-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+                {{ featured.tag }}
+              </span>
+              <span class="bg-black/50 text-white text-xs px-2 py-1 rounded font-mono">
+                {{ featured.duration }}
+              </span>
+            </div>
+            <h3 class="text-white font-black text-xl lg:text-2xl leading-snug mb-2">
+              {{ featured.title }}
+            </h3>
+            <div class="flex items-center gap-4 text-slate-300 text-sm">
+              <span class="flex items-center gap-1">
+                <Eye class="w-4 h-4" /> {{ featured.views }}
+              </span>
+              <span class="flex items-center gap-1">
+                <ThumbsUp class="w-4 h-4" /> {{ featured.likes }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Video Grid -->
+      <template v-if="rest.length > 0">
+        <h2 class="text-sm font-bold text-slate-600 uppercase tracking-wide mb-4">
+          Semua Video ({{ rest.length }})
+        </h2>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div
+            v-for="video in rest"
+            :key="video.id"
+            class="bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100 group hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer"
+            @click="selectedVideo = video"
+          >
+            <!-- Thumbnail -->
+            <div class="relative overflow-hidden h-48">
+              <img
+                :src="video.img"
+                :alt="video.title"
+                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+              />
+              <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+              <!-- Play Overlay -->
+              <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <div class="w-14 h-14 bg-amber-500/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-xl">
+                  <Play class="w-6 h-6 text-white fill-white ml-1" />
+                </div>
+              </div>
+              <!-- Bottom meta -->
+              <div class="absolute bottom-3 left-3 right-3 flex items-center justify-between">
+                <span class="bg-white/20 backdrop-blur-sm text-white text-xs font-semibold px-2.5 py-1 rounded-full">
+                  {{ video.tag }}
+                </span>
+                <span class="bg-black/70 text-white text-xs px-2 py-1 rounded font-mono">
+                  {{ video.duration }}
+                </span>
+              </div>
+            </div>
+            <!-- Info -->
+            <div class="p-4">
+              <h3 class="text-slate-800 font-bold text-sm leading-snug mb-3 line-clamp-2 group-hover:text-amber-600 transition-colors">
+                {{ video.title }}
+              </h3>
+              <div class="flex items-center justify-between text-xs text-slate-400">
+                <span class="flex items-center gap-1">
+                  <Eye class="w-3.5 h-3.5" /> {{ video.views }}
+                </span>
+                <span class="flex items-center gap-1">
+                  <ThumbsUp class="w-3.5 h-3.5" /> {{ video.likes }}
+                </span>
+                <span class="flex items-center gap-1">
+                  <Clock class="w-3.5 h-3.5" /> {{ video.duration }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </template>
+
+      <!-- Empty State -->
+      <div v-if="filtered.length === 0" class="text-center py-20 text-slate-500">
+        <Play class="w-12 h-12 mx-auto mb-3 text-slate-300" />
+        <p class="font-medium">Tidak ada video yang ditemukan</p>
+      </div>
+
+    </div>
+
+    <!-- Video Modal -->
+    <Teleport to="body">
+      <Transition name="modal">
+        <div
+          v-if="selectedVideo"
+          class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
+          @click="selectedVideo = null"
+        >
+          <div
+            class="bg-slate-900 rounded-2xl overflow-hidden w-full max-w-3xl shadow-2xl"
+            @click.stop
+          >
+            <!-- Video Player -->
+            <div class="relative bg-black aspect-video flex items-center justify-center">
+              <img
+                :src="selectedVideo.img"
+                :alt="selectedVideo.title"
+                class="absolute inset-0 w-full h-full object-cover opacity-40"
+              />
+              <div class="relative z-10 text-center">
+                <div class="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-white/30">
+                  <Play class="w-10 h-10 text-white fill-white ml-1" />
+                </div>
+                <p class="text-white/80 text-sm">Video akan diputar dari sumber aslinya</p>
+                <p class="text-white/50 text-xs mt-1">
+                  (Ini adalah pratinjau desain — YouTube embed akan ditanam di sini)
+                </p>
+              </div>
+              <button
+                @click="selectedVideo = null"
+                class="absolute top-4 right-4 z-20 w-8 h-8 bg-white/20 hover:bg-white/40 rounded-full flex items-center justify-center transition-colors"
+              >
+                <X class="w-4 h-4 text-white" />
+              </button>
+              <!-- Duration badge -->
+              <div class="absolute bottom-4 right-4 bg-black/70 text-white text-xs px-2 py-1 rounded-md font-mono">
+                {{ selectedVideo.duration }}
+              </div>
+            </div>
+            <div class="p-5">
+              <h3 class="text-white font-bold text-lg mb-2">{{ selectedVideo.title }}</h3>
+              <div class="flex items-center gap-4 text-slate-400 text-sm">
+                <span class="flex items-center gap-1">
+                  <Eye class="w-4 h-4" /> {{ selectedVideo.views }} tayangan
+                </span>
+                <span class="flex items-center gap-1">
+                  <ThumbsUp class="w-4 h-4" /> {{ selectedVideo.likes }} suka
+                </span>
+                <span class="flex items-center gap-1">
+                  <Clock class="w-4 h-4" /> {{ selectedVideo.duration }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
+
+  </div>
+</template>
+
+<style scoped>
+.modal-enter-active,
+.modal-leave-active {
+  transition: opacity 200ms ease;
+}
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+}
+</style>
