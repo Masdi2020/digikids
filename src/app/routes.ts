@@ -5,13 +5,13 @@ import Layout from './components/Layout.vue'
 
 // APP PAGES
 import Home from './pages/Home.vue'
-// import Berita from './pages/Berita.vue'
+import Berita from './pages/Berita.vue'
 // import BahayaGadget from './pages/BahayaGadget.vue'
 // import PenggantiGadget from './pages/PenggantiGadget.vue'
 // import Panduan from './pages/Panduan.vue'
 // import VideoEdukasi from './pages/VideoEdukasi.vue'
 // import AboutUs from './pages/AboutUs.vue'
-// import ArtikelDetail from './pages/ArtikelDetail.vue'
+import ArtikelDetail from './pages/ArtikelDetail.vue'
 
 // // ADMIN
 // import AdminRoot from '../paneladmin/PanelAdmin.vue'
@@ -34,11 +34,11 @@ const routes = [
         name: 'home',
         component: Home,
       },
-      //   {
-      //     path: 'berita',
-      //     name: 'berita',
-      //     component: Berita,
-      //   },
+      {
+        path: 'berita',
+        name: 'berita',
+        component: Berita,
+      },
       //   {
       //     path: 'bahaya-gadget',
       //     name: 'bahaya-gadget',
@@ -64,11 +64,11 @@ const routes = [
       //     name: 'about',
       //     component: AboutUs,
       //   },
-      //   {
-      //     path: 'artikel/:id',
-      //     name: 'artikel-detail',
-      //     component: ArtikelDetail,
-      //   },
+      {
+        path: 'artikel/:id',
+        name: 'artikel-detail',
+        component: ArtikelDetail,
+      },
     ],
   },
 

@@ -89,11 +89,9 @@ onUnmounted(() => {
             </div>
 
             <div class="flex flex-col leading-none">
-              <span class="text-sky-600 font-black text-lg tracking-tight"> Bijak </span>
+              <span class="text-sky-600 font-black text-lg tracking-tight"> DIGI </span>
 
-              <span class="text-slate-700 font-bold text-xs tracking-widest uppercase">
-                Gadget
-              </span>
+              <span class="text-slate-700 font-bold text-xs tracking-widest uppercase"> KIDS </span>
             </div>
           </RouterLink>
 

@@ -1,6 +1,10 @@
+<!-- eslint-disable vue/multi-word-component-names -->
+<!-- eslint-disable vue/block-lang -->
+<!-- eslint-disable vue/multi-word-component-names -->
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 import { RouterLink } from 'vue-router'
+import EmblaCarousel from 'embla-carousel'
 
 import {
   ChevronLeft,
@@ -13,14 +17,10 @@ import {
   Gamepad2,
   Clock,
   Calendar,
-} from "lucide-vue-next";
+} from 'lucide-vue-next'
 
 // ── Data (ganti dengan import dari file data sebenarnya) ──
-import {
-  BERITA_ARTICLES,
-  BAHAYA_ARTICLES,
-  ALTERNATIF_ARTICLES,
-} from '../data/articles'
+import { BERITA_ARTICLES, BAHAYA_ARTICLES, ALTERNATIF_ARTICLES } from '../data/articles'
 
 // ──────────────────────────────────────────────
 // HERO SLIDER
@@ -34,41 +34,61 @@ let autoplayTimer = null
 const emblaRef = ref(null)
 
 async function initEmbla() {
-  const { default: EmblaCarousel } = await import('embla-carousel-vue')
-  emblaApi = EmblaCarousel(emblaRef.value, { loop: true })
+  if (!emblaRef.value) return
+
+  emblaApi = EmblaCarousel(emblaRef.value, {
+    loop: true,
+  })
+
   emblaApi.on('select', () => {
     selectedIndex.value = emblaApi.selectedScrollSnap()
   })
-  autoplayTimer = setInterval(() => emblaApi.scrollNext(), 5500)
+
+  autoplayTimer = setInterval(() => {
+    emblaApi?.scrollNext()
+  }, 5500)
 }
 
-function scrollPrev() { emblaApi?.scrollPrev() }
-function scrollNext() { emblaApi?.scrollNext() }
-function scrollTo(i)  { emblaApi?.scrollTo(i) }
+function scrollPrev() {
+  emblaApi?.scrollPrev()
+}
+function scrollNext() {
+  emblaApi?.scrollNext()
+}
+function scrollTo(i) {
+  emblaApi?.scrollTo(i)
+}
 
 onMounted(() => initEmbla())
 onUnmounted(() => {
   clearInterval(autoplayTimer)
-  emblaApi?.destroy()
+
+  if (emblaApi) {
+    emblaApi.destroy()
+  }
 })
 
 // ──────────────────────────────────────────────
 // BAHAYA + ALTERNATIF + BERITA
 // ──────────────────────────────────────────────
-const bahayaArticles     = BAHAYA_ARTICLES.slice(0, 3)
+const bahayaArticles = BAHAYA_ARTICLES.slice(0, 3)
 const alternatifArticles = ALTERNATIF_ARTICLES.slice(0, 3)
-const beritaArticles     = BERITA_ARTICLES.slice(0, 4)
+const beritaArticles = BERITA_ARTICLES.slice(0, 4)
 
 const cardColors = [
-  { bg: 'bg-emerald-500', light: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200' },
-  { bg: 'bg-teal-500',    light: 'bg-teal-50',    text: 'text-teal-700',    border: 'border-teal-200'    },
-  { bg: 'bg-cyan-500',    light: 'bg-cyan-50',    text: 'text-cyan-700',    border: 'border-cyan-200'    },
+  {
+    bg: 'bg-emerald-500',
+    light: 'bg-emerald-50',
+    text: 'text-emerald-700',
+    border: 'border-emerald-200',
+  },
+  { bg: 'bg-teal-500', light: 'bg-teal-50', text: 'text-teal-700', border: 'border-teal-200' },
+  { bg: 'bg-cyan-500', light: 'bg-cyan-50', text: 'text-cyan-700', border: 'border-cyan-200' },
 ]
 </script>
 
 <template>
   <div class="overflow-x-hidden">
-
     <!-- ══════════════════════════════════════════
          HERO SLIDER
     ══════════════════════════════════════════ -->
@@ -85,8 +105,12 @@ const cardColors = [
               :alt="article.title"
               class="absolute inset-0 w-full h-full object-cover"
             />
-            <div class="absolute inset-0 bg-gradient-to-r from-slate-900/90 via-slate-900/60 to-slate-900/20" />
-            <div class="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent" />
+            <div
+              class="absolute inset-0 bg-gradient-to-r from-slate-900/90 via-slate-900/60 to-slate-900/20"
+            />
+            <div
+              class="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent"
+            />
 
             <div class="relative h-full flex items-center">
               <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
@@ -102,7 +126,9 @@ const cardColors = [
                       <Clock class="w-3 h-3" /> {{ article.readTime }} baca
                     </span>
                   </div>
-                  <h2 class="text-white font-black text-3xl sm:text-4xl lg:text-5xl leading-[1.1] mb-4">
+                  <h2
+                    class="text-white font-black text-3xl sm:text-4xl lg:text-5xl leading-[1.1] mb-4"
+                  >
                     {{ article.title }}
                   </h2>
                   <p class="text-slate-300 text-base leading-relaxed mb-6 max-w-xl line-clamp-3">
@@ -148,13 +174,15 @@ const cardColors = [
             'rounded-full transition-all duration-300',
             i === selectedIndex
               ? 'w-8 h-2.5 bg-sky-400'
-              : 'w-2.5 h-2.5 bg-white/40 hover:bg-white/70'
+              : 'w-2.5 h-2.5 bg-white/40 hover:bg-white/70',
           ]"
         />
       </div>
 
       <!-- Counter -->
-      <div class="absolute top-6 right-6 z-10 bg-black/30 backdrop-blur-sm text-white text-xs font-medium px-3 py-1 rounded-full">
+      <div
+        class="absolute top-6 right-6 z-10 bg-black/30 backdrop-blur-sm text-white text-xs font-medium px-3 py-1 rounded-full"
+      >
         {{ selectedIndex + 1 }} / {{ heroSlides.length }}
       </div>
     </section>
@@ -176,7 +204,8 @@ const cardColors = [
               Kenali Risiko Sebelum<br />Terlambat
             </h2>
             <p class="text-slate-400 text-sm mt-2 max-w-md">
-              Artikel berbasis riset ilmiah tentang dampak nyata penggunaan gadget berlebih pada anak.
+              Artikel berbasis riset ilmiah tentang dampak nyata penggunaan gadget berlebih pada
+              anak.
             </p>
           </div>
           <RouterLink
@@ -200,23 +229,33 @@ const cardColors = [
                 :alt="art.title"
                 class="w-full h-full object-cover opacity-60 group-hover:opacity-80 group-hover:scale-105 transition-all duration-500"
               />
-              <div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent" />
-              <span class="absolute top-3 left-3 bg-rose-600/90 text-white text-xs font-bold px-2.5 py-1 rounded-full">
+              <div
+                class="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent"
+              />
+              <span
+                class="absolute top-3 left-3 bg-rose-600/90 text-white text-xs font-bold px-2.5 py-1 rounded-full"
+              >
                 {{ art.category }}
               </span>
             </div>
             <div class="p-5 flex flex-col flex-1">
-              <h3 class="text-white font-bold text-sm leading-snug mb-2 group-hover:text-rose-300 transition-colors line-clamp-2">
+              <h3
+                class="text-white font-bold text-sm leading-snug mb-2 group-hover:text-rose-300 transition-colors line-clamp-2"
+              >
                 {{ art.title }}
               </h3>
               <p class="text-slate-400 text-xs leading-relaxed line-clamp-3 flex-1 mb-4">
                 {{ art.excerpt }}
               </p>
-              <div class="flex items-center justify-between text-xs text-slate-500 pt-3 border-t border-slate-700/50">
+              <div
+                class="flex items-center justify-between text-xs text-slate-500 pt-3 border-t border-slate-700/50"
+              >
                 <span class="flex items-center gap-1">
                   <Calendar class="w-3 h-3" /> {{ art.date }}
                 </span>
-                <span class="flex items-center gap-1 text-rose-400 font-medium group-hover:gap-2 transition-all">
+                <span
+                  class="flex items-center gap-1 text-rose-400 font-medium group-hover:gap-2 transition-all"
+                >
                   Baca <ArrowRight class="w-3 h-3" />
                 </span>
               </div>
@@ -268,18 +307,33 @@ const cardColors = [
                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
               />
               <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
-              <span :class="[cardColors[i].bg, 'absolute top-3 left-3 text-white text-xs font-bold px-2.5 py-1 rounded-full']">
+              <span
+                :class="[
+                  cardColors[i].bg,
+                  'absolute top-3 left-3 text-white text-xs font-bold px-2.5 py-1 rounded-full',
+                ]"
+              >
                 {{ art.category }}
               </span>
             </div>
             <div class="p-5 flex flex-col flex-1">
-              <h3 :class="['text-slate-800 font-bold text-sm leading-snug mb-2 transition-colors line-clamp-2', `group-hover:${cardColors[i].text}`]">
+              <h3
+                :class="[
+                  'text-slate-800 font-bold text-sm leading-snug mb-2 transition-colors line-clamp-2',
+                  `group-hover:${cardColors[i].text}`,
+                ]"
+              >
                 {{ art.title }}
               </h3>
               <p class="text-slate-500 text-xs leading-relaxed line-clamp-3 flex-1 mb-4">
                 {{ art.excerpt }}
               </p>
-              <div :class="['flex items-center gap-1.5 text-xs font-semibold group-hover:gap-2.5 transition-all', cardColors[i].text]">
+              <div
+                :class="[
+                  'flex items-center gap-1.5 text-xs font-semibold group-hover:gap-2.5 transition-all',
+                  cardColors[i].text,
+                ]"
+              >
                 Baca Selengkapnya <ArrowRight class="w-3.5 h-3.5" />
               </div>
             </div>
@@ -298,7 +352,8 @@ const cardColors = [
             Panduan dan Edukasi Video
           </h2>
           <p class="text-slate-500 text-sm max-w-md mx-auto">
-            Pelajari cara mengelola penggunaan gadget dengan panduan terstruktur dan video informatif.
+            Pelajari cara mengelola penggunaan gadget dengan panduan terstruktur dan video
+            informatif.
           </p>
         </div>
 
@@ -319,7 +374,9 @@ const cardColors = [
                 Panduan lengkap berdasarkan usia, FAQ, dan langkah-langkah parental control.
               </p>
             </div>
-            <div class="relative mt-5 inline-flex items-center gap-2 text-white font-semibold text-sm group-hover:gap-3 transition-all">
+            <div
+              class="relative mt-5 inline-flex items-center gap-2 text-white font-semibold text-sm group-hover:gap-3 transition-all"
+            >
               Baca Panduan <ArrowRight class="w-4 h-4" />
             </div>
           </RouterLink>
@@ -340,7 +397,9 @@ const cardColors = [
                 Koleksi video informatif tentang gadget, parental control, dan aktivitas anak.
               </p>
             </div>
-            <div class="relative mt-5 inline-flex items-center gap-2 text-white font-semibold text-sm group-hover:gap-3 transition-all">
+            <div
+              class="relative mt-5 inline-flex items-center gap-2 text-white font-semibold text-sm group-hover:gap-3 transition-all"
+            >
               Tonton Video <ArrowRight class="w-4 h-4" />
             </div>
           </RouterLink>
@@ -384,10 +443,14 @@ const cardColors = [
             </div>
             <div class="p-4 flex flex-col flex-1">
               <span class="text-sky-600 text-xs font-semibold mb-1.5">{{ art.category }}</span>
-              <h4 class="text-slate-800 font-bold text-sm leading-snug flex-1 line-clamp-2 group-hover:text-sky-600 transition-colors">
+              <h4
+                class="text-slate-800 font-bold text-sm leading-snug flex-1 line-clamp-2 group-hover:text-sky-600 transition-colors"
+              >
                 {{ art.title }}
               </h4>
-              <div class="flex items-center gap-1 text-slate-400 text-xs mt-3 pt-2 border-t border-slate-100">
+              <div
+                class="flex items-center gap-1 text-slate-400 text-xs mt-3 pt-2 border-t border-slate-100"
+              >
                 <Clock class="w-3 h-3" /> {{ art.readTime }}
               </div>
             </div>
@@ -400,14 +463,14 @@ const cardColors = [
          ABOUT STRIP
     ══════════════════════════════════════════ -->
     <section class="bg-slate-900 py-12">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-6">
+      <div
+        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-6"
+      >
         <div>
           <p class="text-slate-400 text-xs font-semibold uppercase tracking-widest mb-1">
             Program Pengabdian Masyarakat
           </p>
-          <h3 class="text-white font-black text-xl">
-            BijakGadget — RT 045 Karang Joang
-          </h3>
+          <h3 class="text-white font-black text-xl">BijakGadget — RT 045 Karang Joang</h3>
           <p class="text-slate-400 text-sm mt-1">
             Portal edukasi gratis untuk keluarga yang peduli masa depan digital anak.
           </p>
@@ -428,6 +491,5 @@ const cardColors = [
         </div>
       </div>
     </section>
-
   </div>
 </template>
