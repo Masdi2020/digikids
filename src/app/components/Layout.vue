@@ -17,7 +17,7 @@ import {
   ChevronUp,
 } from 'lucide-vue-next'
 
-import Logo from '../../../public/Logo.png'
+import Logo from '/Logo.png'
 
 const route = useRoute()
 
