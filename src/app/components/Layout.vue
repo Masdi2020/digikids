@@ -17,6 +17,8 @@ import {
   ChevronUp,
 } from 'lucide-vue-next'
 
+import Logo from '../../../public/Logo.png'
+
 const route = useRoute()
 
 const menuOpen = ref(false)
@@ -83,9 +85,9 @@ onUnmounted(() => {
           <!-- Logo -->
           <RouterLink to="/" class="flex items-center gap-2.5 group">
             <div
-              class="w-9 h-9 rounded-xl bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center shadow-md group-hover:shadow-sky-300 transition-shadow"
+              class="w-10 h-10 flex items-center justify-center"
             >
-              <Smartphone class="w-5 h-5 text-white" />
+              <img :src="Logo" alt="Logo" class="w-full h-full object-contain" >
             </div>
 
             <div class="flex flex-col leading-none">
