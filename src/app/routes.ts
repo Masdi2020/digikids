@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 // APP LAYOUT
-// import Layout from './components/Layout.vue'
+import Layout from './components/Layout.vue'
 
 // APP PAGES
 import Home from './pages/Home.vue'
@@ -27,93 +27,93 @@ import Home from './pages/Home.vue'
 const routes = [
   {
     path: '/',
-    // component: Layout,
+    component: Layout,
     children: [
       {
         path: '',
         name: 'home',
         component: Home,
       },
-    //   {
-    //     path: 'berita',
-    //     name: 'berita',
-    //     component: Berita,
-    //   },
-    //   {
-    //     path: 'bahaya-gadget',
-    //     name: 'bahaya-gadget',
-    //     component: BahayaGadget,
-    //   },
-    //   {
-    //     path: 'pengganti-gadget',
-    //     name: 'pengganti-gadget',
-    //     component: PenggantiGadget,
-    //   },
-    //   {
-    //     path: 'panduan',
-    //     name: 'panduan',
-    //     component: Panduan,
-    //   },
-    //   {
-    //     path: 'video-edukasi',
-    //     name: 'video-edukasi',
-    //     component: VideoEdukasi,
-    //   },
-    //   {
-    //     path: 'about',
-    //     name: 'about',
-    //     component: AboutUs,
-    //   },
-    //   {
-    //     path: 'artikel/:id',
-    //     name: 'artikel-detail',
-    //     component: ArtikelDetail,
-    //   },
+      //   {
+      //     path: 'berita',
+      //     name: 'berita',
+      //     component: Berita,
+      //   },
+      //   {
+      //     path: 'bahaya-gadget',
+      //     name: 'bahaya-gadget',
+      //     component: BahayaGadget,
+      //   },
+      //   {
+      //     path: 'pengganti-gadget',
+      //     name: 'pengganti-gadget',
+      //     component: PenggantiGadget,
+      //   },
+      //   {
+      //     path: 'panduan',
+      //     name: 'panduan',
+      //     component: Panduan,
+      //   },
+      //   {
+      //     path: 'video-edukasi',
+      //     name: 'video-edukasi',
+      //     component: VideoEdukasi,
+      //   },
+      //   {
+      //     path: 'about',
+      //     name: 'about',
+      //     component: AboutUs,
+      //   },
+      //   {
+      //     path: 'artikel/:id',
+      //     name: 'artikel-detail',
+      //     component: ArtikelDetail,
+      //   },
     ],
   },
 
-//   {
-//     path: '/paneladmin',
-//     component: AdminRoot,
-//     children: [
-//       {
-//         path: '',
-//         component: AdminLayout,
-//         children: [
-//           {
-//             path: '',
-//             name: 'dashboard',
-//             component: Dashboard,
-//           },
-//           {
-//             path: 'berita',
-//             name: 'manage-berita',
-//             component: ManageBerita,
-//           },
-//           {
-//             path: 'bahaya-gadget',
-//             name: 'manage-bahaya',
-//             component: ManageBahaya,
-//           },
-//           {
-//             path: 'alternatif',
-//             name: 'manage-alternatif',
-//             component: ManageAlternatif,
-//           },
-//           {
-//             path: 'panduan',
-//             name: 'manage-panduan',
-//             component: ManagePanduan,
-//           },
-//           {
-//             path: 'video-edukasi',
-//             name: 'manage-video',
-//             component: ManageVideo,
-//           },
-//         ],
-//       },
-//     ],
-//   },
+  //   {
+  //     path: '/paneladmin',
+  //     component: AdminRoot,
+  //     children: [
+  //       {
+  //         path: '',
+  //         component: AdminLayout,
+  //         children: [
+  //           {
+  //             path: '',
+  //             name: 'dashboard',
+  //             component: Dashboard,
+  //           },
+  //           {
+  //             path: 'berita',
+  //             name: 'manage-berita',
+  //             component: ManageBerita,
+  //           },
+  //           {
+  //             path: 'bahaya-gadget',
+  //             name: 'manage-bahaya',
+  //             component: ManageBahaya,
+  //           },
+  //           {
+  //             path: 'alternatif',
+  //             name: 'manage-alternatif',
+  //             component: ManageAlternatif,
+  //           },
+  //           {
+  //             path: 'panduan',
+  //             name: 'manage-panduan',
+  //             component: ManagePanduan,
+  //           },
+  //           {
+  //             path: 'video-edukasi',
+  //             name: 'manage-video',
+  //             component: ManageVideo,
+  //           },
+  //         ],
+  //       },
+  //     ],
+  //   },
 ]
 
 const router = createRouter({
