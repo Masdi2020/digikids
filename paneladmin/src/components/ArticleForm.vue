@@ -87,15 +87,70 @@
                 class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent"
               />
             </div>
-            <div>
-              <label class="block text-xs font-semibold text-slate-600 mb-1">URL Gambar</label>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Upload Gambar</label>
+            <div
+              :class="[
+                'relative rounded-xl border-2 border-dashed p-4 transition-all',
+                isDraggingImage
+                  ? 'border-sky-400 bg-sky-50'
+                  : 'border-slate-200 bg-slate-50 hover:border-sky-300 hover:bg-sky-50/50',
+              ]"
+              @dragenter.prevent="isDraggingImage = true"
+              @dragover.prevent="isDraggingImage = true"
+              @dragleave.prevent="isDraggingImage = false"
+              @drop.prevent="handleImageDrop"
+            >
               <input
-                v-model="form.img"
-                type="text"
-                placeholder="https://..."
-                class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent"
+                ref="imageInput"
+                type="file"
+                accept="image/*"
+                class="hidden"
+                @change="handleImageSelect"
               />
+              <div v-if="form.img" class="grid gap-3 sm:grid-cols-[160px_1fr] sm:items-center">
+                <img
+                  :src="form.img"
+                  alt="Preview gambar artikel"
+                  class="h-32 w-full rounded-lg object-cover sm:w-40"
+                />
+                <div class="space-y-3">
+                  <div>
+                    <p class="text-sm font-semibold text-slate-700">{{ imageFileName || 'Gambar artikel siap digunakan' }}</p>
+                    <p class="text-xs text-slate-500">Drag gambar baru ke area ini untuk mengganti.</p>
+                  </div>
+                  <div class="flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      @click="openImagePicker"
+                      class="inline-flex items-center gap-2 rounded-lg bg-sky-600 px-3 py-2 text-xs font-semibold text-white hover:bg-sky-700 transition-colors"
+                    >
+                      <UploadCloud class="h-4 w-4" /> Ganti Gambar
+                    </button>
+                    <button
+                      type="button"
+                      @click="clearImage"
+                      class="inline-flex items-center gap-2 rounded-lg bg-white px-3 py-2 text-xs font-semibold text-rose-600 border border-rose-100 hover:bg-rose-50 transition-colors"
+                    >
+                      <Trash2 class="h-4 w-4" /> Hapus
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <button
+                v-else
+                type="button"
+                @click="openImagePicker"
+                class="flex min-h-36 w-full flex-col items-center justify-center rounded-lg text-center"
+              >
+                <UploadCloud class="mb-3 h-9 w-9 text-sky-500" />
+                <span class="text-sm font-semibold text-slate-700">Drag & drop gambar di sini</span>
+                <span class="mt-1 text-xs text-slate-500">atau klik untuk memilih file dari perangkat</span>
+                <span class="mt-2 text-[11px] font-medium text-slate-400">Format JPG, PNG, WEBP. Maksimal 5 MB.</span>
+              </button>
             </div>
+            <p v-if="imageError" class="mt-1 text-xs font-medium text-rose-600">{{ imageError }}</p>
           </div>
           <div>
             <label class="block text-xs font-semibold text-slate-600 mb-1">Ringkasan (Excerpt) *</label>
@@ -219,7 +274,7 @@
 
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
-import { X, Trash2, Plus } from 'lucide-vue-next'
+import { X, Trash2, Plus, UploadCloud } from 'lucide-vue-next'
 import type { Article, ArticleSection, Reference } from '../data/articles'
 
 const props = defineProps<{
@@ -238,6 +293,10 @@ const tabs = [
   { key: 'referensi', label: 'Referensi' },
 ]
 const activeTab = ref('info')
+const imageInput = ref<HTMLInputElement | null>(null)
+const isDraggingImage = ref(false)
+const imageError = ref('')
+const imageFileName = ref('')
 
 const form = reactive<{
   title: string
@@ -276,6 +335,54 @@ function removeSection(index: number) {
 function updateSectionList(index: number, value: string) {
   const lines = value.split('\n').map(line => line.trim()).filter(Boolean)
   form.sections[index].list = lines
+}
+
+function openImagePicker() {
+  imageInput.value?.click()
+}
+
+function handleImageSelect(event: Event) {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+  processImageFile(file)
+  input.value = ''
+}
+
+function handleImageDrop(event: DragEvent) {
+  isDraggingImage.value = false
+  const file = event.dataTransfer?.files?.[0]
+  processImageFile(file)
+}
+
+function processImageFile(file?: File) {
+  imageError.value = ''
+  if (!file) return
+
+  if (!file.type.startsWith('image/')) {
+    imageError.value = 'File harus berupa gambar.'
+    return
+  }
+
+  if (file.size > 5 * 1024 * 1024) {
+    imageError.value = 'Ukuran gambar maksimal 5 MB.'
+    return
+  }
+
+  const reader = new FileReader()
+  reader.onload = () => {
+    form.img = String(reader.result)
+    imageFileName.value = file.name
+  }
+  reader.onerror = () => {
+    imageError.value = 'Gambar gagal dibaca. Coba pilih file lain.'
+  }
+  reader.readAsDataURL(file)
+}
+
+function clearImage() {
+  form.img = ''
+  imageFileName.value = ''
+  imageError.value = ''
 }
 
 function addRef() {
