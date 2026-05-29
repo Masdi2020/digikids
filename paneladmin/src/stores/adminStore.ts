@@ -11,6 +11,19 @@ import {
   INITIAL_FAQ,
   INITIAL_FAMILY_RULES,
 } from '../data/panduan'
+import {
+  isApiConfigured,
+  getArticles,
+  createArticle,
+  updateArticle as apiUpdateArticle,
+  deleteArticle as apiDeleteArticle,
+  getVideos,
+  createVideo,
+  updateVideo as apiUpdateVideo,
+  deleteVideo as apiDeleteVideo,
+  getPanduan,
+  updatePanduan,
+} from '../lib/api'
 
 export const useAdminStore = defineStore('admin', () => {
   const articles = ref<Article[]>([
@@ -23,27 +36,113 @@ export const useAdminStore = defineStore('admin', () => {
   const parentalSteps = ref<ParentalStep[]>([...INITIAL_PARENTAL_STEPS])
   const faqItems = ref<FaqItem[]>([...INITIAL_FAQ])
   const familyRules = ref<FamilyRule[]>([...INITIAL_FAMILY_RULES])
+  const apiError = ref<string | null>(null)
+  const isLoading = ref(false)
 
-  function addArticle(a: Article) {
+  async function loadAll() {
+    if (!isApiConfigured) return
+
+    isLoading.value = true
+    apiError.value = null
+    try {
+      const [articleData, videoData, panduanData] = await Promise.all([
+        getArticles(),
+        getVideos(),
+        getPanduan(),
+      ])
+
+      articles.value = articleData
+      videos.value = videoData
+      screenTime.value = panduanData.screenTime
+      parentalSteps.value = panduanData.parentalSteps
+      faqItems.value = panduanData.faqItems
+      familyRules.value = panduanData.familyRules
+    } catch (error) {
+      apiError.value = error instanceof Error ? error.message : 'Gagal memuat data API.'
+      console.error(error)
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  async function addArticle(a: Article) {
+    if (isApiConfigured) {
+      const created = await createArticle(a)
+      articles.value.unshift(created)
+      return
+    }
     articles.value.unshift(a)
   }
-  function updateArticle(a: Article) {
+  async function updateArticle(a: Article) {
+    if (isApiConfigured) {
+      const updated = await apiUpdateArticle(a.id, a)
+      const idx = articles.value.findIndex(x => x.id === updated.id)
+      if (idx !== -1) articles.value[idx] = updated
+      return
+    }
     const idx = articles.value.findIndex(x => x.id === a.id)
     if (idx !== -1) articles.value[idx] = a
   }
-  function deleteArticle(id: string) {
+  async function deleteArticle(id: string) {
+    if (isApiConfigured) {
+      await apiDeleteArticle(id)
+    }
     articles.value = articles.value.filter(x => x.id !== id)
   }
 
-  function addVideo(v: Video) {
+  async function addVideo(v: Video) {
+    if (isApiConfigured) {
+      const created = await createVideo({
+        title: v.title,
+        category: v.category,
+        tag: v.tag,
+        duration: v.duration,
+        youtubeId: v.youtubeId,
+        views: v.views,
+        likes: v.likes,
+        img: v.img,
+        featured: v.featured,
+      })
+      videos.value.unshift(created)
+      return
+    }
     videos.value.unshift(v)
   }
-  function updateVideo(v: Video) {
+  async function updateVideo(v: Video) {
+    if (isApiConfigured) {
+      const updated = await apiUpdateVideo(v.id, {
+        title: v.title,
+        category: v.category,
+        tag: v.tag,
+        duration: v.duration,
+        youtubeId: v.youtubeId,
+        views: v.views,
+        likes: v.likes,
+        img: v.img,
+        featured: v.featured,
+      })
+      const idx = videos.value.findIndex(x => x.id === updated.id)
+      if (idx !== -1) videos.value[idx] = updated
+      return
+    }
     const idx = videos.value.findIndex(x => x.id === v.id)
     if (idx !== -1) videos.value[idx] = v
   }
-  function deleteVideo(id: number) {
+  async function deleteVideo(id: number) {
+    if (isApiConfigured) {
+      await apiDeleteVideo(id)
+    }
     videos.value = videos.value.filter(x => x.id !== id)
+  }
+
+  async function savePanduan() {
+    if (!isApiConfigured) return
+    await updatePanduan({
+      screenTime: screenTime.value,
+      parentalSteps: parentalSteps.value,
+      faqItems: faqItems.value,
+      familyRules: familyRules.value,
+    })
   }
 
   return {
@@ -59,5 +158,9 @@ export const useAdminStore = defineStore('admin', () => {
     parentalSteps,
     faqItems,
     familyRules,
+    loadAll,
+    savePanduan,
+    apiError,
+    isLoading,
   }
 })

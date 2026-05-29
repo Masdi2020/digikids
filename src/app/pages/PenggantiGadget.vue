@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 
 import {
@@ -16,7 +16,8 @@ import {
   Calendar,
 } from 'lucide-vue-next'
 
-import { ALTERNATIF_ARTICLES } from '../data/articles'
+import type { Article } from '../data/articles'
+import { fetchArticles } from '../lib/api'
 
 const categoryIcon: Record<string, any> = {
   'Alam & Lingkungan': TreePine,
@@ -75,9 +76,15 @@ const categoryColor: Record<
 }
 
 const search = ref('')
+const articles = ref<Article[]>([])
+
+onMounted(async () => {
+  const all = await fetchArticles()
+  articles.value = all.filter((a) => a.type === 'alternatif')
+})
 
 const filtered = computed(() => {
-  return ALTERNATIF_ARTICLES.filter((a) => {
+  return articles.value.filter((a) => {
     return (
       a.title.toLowerCase().includes(search.value.toLowerCase()) ||
       a.category.toLowerCase().includes(search.value.toLowerCase()) ||

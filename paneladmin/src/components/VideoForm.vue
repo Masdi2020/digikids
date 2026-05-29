@@ -129,6 +129,7 @@
             <p :class="['text-xs font-medium', imageError ? 'text-rose-600' : 'text-slate-500']">
               {{ imageError || imageFileName || 'URL tetap bisa dipakai jika tidak ingin upload file.' }}
             </p>
+            <span v-if="isUploadingImage" class="text-xs font-medium text-amber-600">Mengupload...</span>
             <button
               v-if="imageFileName"
               type="button"
@@ -176,6 +177,7 @@ import { reactive, ref } from 'vue'
 import { X, UploadCloud } from 'lucide-vue-next'
 import type { Video } from '../data/videos'
 import { VIDEO_CATEGORIES } from '../data/videos'
+import { uploadImage } from '../lib/api'
 
 const props = defineProps<{ video?: Video | null }>()
 const emit = defineEmits<{
@@ -188,6 +190,7 @@ const imageInput = ref<HTMLInputElement | null>(null)
 const isDraggingImage = ref(false)
 const imageError = ref('')
 const imageFileName = ref('')
+const isUploadingImage = ref(false)
 
 const form = reactive<Omit<Video, 'id'>>({
   title:      props.video?.title ?? '',
@@ -205,20 +208,20 @@ function openImagePicker() {
   imageInput.value?.click()
 }
 
-function handleImageSelect(event: Event) {
+async function handleImageSelect(event: Event) {
   const input = event.target as HTMLInputElement
   const file = input.files?.[0]
-  processImageFile(file)
+  await processImageFile(file)
   input.value = ''
 }
 
-function handleImageDrop(event: DragEvent) {
+async function handleImageDrop(event: DragEvent) {
   isDraggingImage.value = false
   const file = event.dataTransfer?.files?.[0]
-  processImageFile(file)
+  await processImageFile(file)
 }
 
-function processImageFile(file?: File) {
+async function processImageFile(file?: File) {
   imageError.value = ''
   if (!file) return
 
@@ -232,15 +235,16 @@ function processImageFile(file?: File) {
     return
   }
 
-  const reader = new FileReader()
-  reader.onload = () => {
-    form.img = String(reader.result)
+  try {
+    isUploadingImage.value = true
+    const url = await uploadImage(file)
+    form.img = url
     imageFileName.value = file.name
+  } catch (error) {
+    imageError.value = error instanceof Error ? error.message : 'Gambar gagal diupload.'
+  } finally {
+    isUploadingImage.value = false
   }
-  reader.onerror = () => {
-    imageError.value = 'Gambar gagal dibaca. Coba pilih file lain.'
-  }
-  reader.readAsDataURL(file)
 }
 
 function clearUploadedImage() {
@@ -255,6 +259,10 @@ function clearImageStatus() {
 }
 
 function handleSubmit() {
+  if (isUploadingImage.value) {
+    alert('Tunggu hingga upload gambar selesai.')
+    return
+  }
   if (!form.title.trim() || !form.img.trim()) {
     alert('Judul dan thumbnail wajib diisi.')
     return

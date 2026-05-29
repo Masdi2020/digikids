@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 
 import {
@@ -12,16 +12,27 @@ import {
   ExternalLink,
 } from 'lucide-vue-next'
 
-import { getArticleById, getRelatedArticles } from '../data/articles'
+import type { Article } from '../data/articles'
+import { fetchArticles } from '../lib/api'
 
 const route = useRoute()
 const router = useRouter()
 
 const id = computed(() => route.params.id as string)
 
-const article = computed(() => {
-  return id.value ? getArticleById(id.value) : undefined
-})
+const article = ref<Article | undefined>()
+const allArticles = ref<Article[]>([])
+const isLoading = ref(true)
+
+async function loadArticle() {
+  isLoading.value = true
+  allArticles.value = await fetchArticles()
+  article.value = id.value ? allArticles.value.find((a) => a.id === id.value) : undefined
+  isLoading.value = false
+}
+
+onMounted(loadArticle)
+watch(id, loadArticle)
 
 const typeBadge: Record<
   string,
@@ -65,17 +76,19 @@ const typeHeaderGrad: Record<string, string> = {
 }
 
 const badge = computed(() => {
-  return typeBadge[article.value!.type]
+  return article.value ? typeBadge[article.value.type] : typeBadge.berita
 })
 
 const gradHd = computed(() => {
-  return typeHeaderGrad[article.value!.type]
+  return article.value ? typeHeaderGrad[article.value.type] : typeHeaderGrad.berita
 })
 
 const related = computed(() => {
   if (!article.value) return []
 
-  return getRelatedArticles(article.value, 3)
+  return allArticles.value
+    .filter((a) => a.type === article.value?.type && a.id !== article.value?.id)
+    .slice(0, 3)
 })
 
 const goBack = () => {
@@ -85,7 +98,15 @@ const goBack = () => {
 
 <template>
   <div
-    v-if="!article"
+    v-if="isLoading"
+    class="min-h-screen flex flex-col items-center justify-center bg-slate-50 gap-3"
+  >
+    <div class="h-10 w-10 rounded-full border-4 border-slate-200 border-t-sky-500 animate-spin" />
+    <p class="text-sm text-slate-500">Memuat artikel...</p>
+  </div>
+
+  <div
+    v-else-if="!article"
     class="min-h-screen flex flex-col items-center justify-center bg-slate-50 gap-4"
   >
     <h2 class="text-2xl font-black text-slate-700">Artikel tidak ditemukan</h2>

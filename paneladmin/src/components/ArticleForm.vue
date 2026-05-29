@@ -151,6 +151,7 @@
               </button>
             </div>
             <p v-if="imageError" class="mt-1 text-xs font-medium text-rose-600">{{ imageError }}</p>
+            <p v-if="isUploadingImage" class="mt-1 text-xs font-medium text-sky-600">Mengupload gambar...</p>
           </div>
           <div>
             <label class="block text-xs font-semibold text-slate-600 mb-1">Ringkasan (Excerpt) *</label>
@@ -276,6 +277,7 @@
 import { ref, reactive } from 'vue'
 import { X, Trash2, Plus, UploadCloud } from 'lucide-vue-next'
 import type { Article, ArticleSection, Reference } from '../data/articles'
+import { uploadImage } from '../lib/api'
 
 const props = defineProps<{
   article?: Article | null
@@ -297,6 +299,7 @@ const imageInput = ref<HTMLInputElement | null>(null)
 const isDraggingImage = ref(false)
 const imageError = ref('')
 const imageFileName = ref('')
+const isUploadingImage = ref(false)
 
 const form = reactive<{
   title: string
@@ -341,20 +344,20 @@ function openImagePicker() {
   imageInput.value?.click()
 }
 
-function handleImageSelect(event: Event) {
+async function handleImageSelect(event: Event) {
   const input = event.target as HTMLInputElement
   const file = input.files?.[0]
-  processImageFile(file)
+  await processImageFile(file)
   input.value = ''
 }
 
-function handleImageDrop(event: DragEvent) {
+async function handleImageDrop(event: DragEvent) {
   isDraggingImage.value = false
   const file = event.dataTransfer?.files?.[0]
-  processImageFile(file)
+  await processImageFile(file)
 }
 
-function processImageFile(file?: File) {
+async function processImageFile(file?: File) {
   imageError.value = ''
   if (!file) return
 
@@ -368,15 +371,16 @@ function processImageFile(file?: File) {
     return
   }
 
-  const reader = new FileReader()
-  reader.onload = () => {
-    form.img = String(reader.result)
+  try {
+    isUploadingImage.value = true
+    const url = await uploadImage(file)
+    form.img = url
     imageFileName.value = file.name
+  } catch (error) {
+    imageError.value = error instanceof Error ? error.message : 'Gambar gagal diupload.'
+  } finally {
+    isUploadingImage.value = false
   }
-  reader.onerror = () => {
-    imageError.value = 'Gambar gagal dibaca. Coba pilih file lain.'
-  }
-  reader.readAsDataURL(file)
 }
 
 function clearImage() {
@@ -394,6 +398,10 @@ function removeRef(index: number) {
 }
 
 function handleSubmit() {
+  if (isUploadingImage.value) {
+    alert('Tunggu hingga upload gambar selesai.')
+    return
+  }
   if (!form.title.trim() || !form.category.trim() || !form.excerpt.trim()) {
     alert('Judul, kategori, dan ringkasan wajib diisi.')
     return

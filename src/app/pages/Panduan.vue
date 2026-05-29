@@ -1,6 +1,6 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 
 import {
   ChevronDown,
@@ -19,181 +19,54 @@ import {
   BookOpen,
 } from 'lucide-vue-next'
 
+import type { ScreenTimeItem, ParentalStep, FaqItem, FamilyRule } from '../data/panduan'
+import { fetchPanduan } from '../lib/api'
+
 const openIndex = ref<number | null>(null);
 
 function toggleAccordion(i: number) {
   openIndex.value = openIndex.value === i ? null : i
 }
 
-const screenTimeData = [
-  {
-    icon: Baby,
-    age: '0–18 Bulan',
-    color: 'from-pink-400 to-rose-500',
-    bg: 'bg-rose-50',
-    border: 'border-rose-200',
-    text: 'text-rose-700',
-    recommended: 'Tidak dianjurkan',
-    exceptions: 'Video call keluarga saja',
-    desc: 'Otak bayi membutuhkan interaksi langsung, sentuhan, dan stimulasi nyata.',
-    tips: [
-      "Hindari menjadikan gadget sebagai 'penghibur' bayi",
-      'Prioritaskan buku bergambar dan mainan fisik',
-      'Video call dengan kakek/nenek masih diperbolehkan',
-    ],
-  },
-  {
-    icon: Baby,
-    age: '18–24 Bulan',
-    color: 'from-orange-400 to-amber-500',
-    bg: 'bg-amber-50',
-    border: 'border-amber-200',
-    text: 'text-amber-700',
-    recommended: '< 1 jam/hari',
-    exceptions: 'Konten berkualitas tinggi saja',
-    desc: 'Gunakan konten edukatif berkualitas dan dampingi anak.',
-    tips: [
-      'Tonton bersama dan diskusikan konten',
-      'Pilih aplikasi sesuai usia',
-      'Jangan menggantikan waktu bermain fisik',
-    ],
-  },
-  {
-    icon: GraduationCap,
-    age: '3–5 Tahun',
-    color: 'from-sky-400 to-blue-500',
-    bg: 'bg-sky-50',
-    border: 'border-sky-200',
-    text: 'text-sky-700',
-    recommended: '1 jam/hari',
-    exceptions: 'Konten edukatif berkualitas',
-    desc: 'Fokus pada kesiapan sekolah dan kreativitas.',
-    tips: [
-      'Tetapkan jadwal konsisten',
-      'Tonton bersama',
-      'Pastikan tidur siang tanpa gadget',
-    ],
-  },
-  {
-    icon: GraduationCap,
-    age: '6–12 Tahun',
-    color: 'from-emerald-400 to-green-500',
-    bg: 'bg-emerald-50',
-    border: 'border-emerald-200',
-    text: 'text-emerald-700',
-    recommended: '2 jam/hari',
-    exceptions: 'Tidak termasuk PR digital',
-    desc: 'Pisahkan screen time hiburan dan pendidikan.',
-    tips: [
-      'PR sebelum hiburan',
-      'Tidak ada gadget sebelum tidur',
-      'Zona bebas gadget saat makan',
-    ],
-  },
-  {
-    icon: Users,
-    age: '13–17 Tahun',
-    color: 'from-violet-400 to-purple-500',
-    bg: 'bg-violet-50',
-    border: 'border-violet-200',
-    text: 'text-violet-700',
-    recommended: '2–3 jam/hari',
-    exceptions: 'Tidak termasuk kebutuhan belajar',
-    desc: 'Ajarkan keamanan online dan tanggung jawab digital.',
-    tips: [
-      'Buat family media plan',
-      'Ajarkan privasi online',
-      'Dorong aktivitas ekstrakurikuler',
-    ],
-  },
-]
+const screenTimeItems = ref<ScreenTimeItem[]>([])
+const parentalStepItems = ref<ParentalStep[]>([])
+const faqItems = ref<FaqItem[]>([])
+const familyRules = ref<FamilyRule[]>([])
 
-const parentalSteps = [
-  {
-    step: 1,
-    icon: Smartphone,
-    title: 'Audit Perangkat Anak',
-    color: 'bg-sky-600',
-    desc: 'Catat semua perangkat dan aplikasi yang digunakan anak.',
-    action: 'Buat daftar aplikasi yang perlu dibatasi',
-  },
-  {
-    step: 2,
-    icon: Lock,
-    title: 'Aktifkan Family Link / Screen Time',
-    color: 'bg-violet-600',
-    desc: 'Gunakan parental control sesuai platform.',
-    action: 'Aktifkan fitur parental control',
-  },
-  {
-    step: 3,
-    icon: Clock,
-    title: 'Atur Batas Waktu Harian',
-    color: 'bg-emerald-600',
-    desc: 'Buat batas waktu penggunaan aplikasi.',
-    action: 'Atur game max 1 jam/hari',
-  },
-  {
-    step: 4,
-    icon: Globe,
-    title: 'Filter Konten Web',
-    color: 'bg-amber-600',
-    desc: 'Aktifkan SafeSearch dan DNS family-friendly.',
-    action: 'Gunakan SafeSearch Google',
-  },
-  {
-    step: 5,
-    icon: Bell,
-    title: 'Monitor & Review Berkala',
-    color: 'bg-rose-600',
-    desc: 'Diskusikan aktivitas digital anak setiap minggu.',
-    action: 'Lakukan family digital check-in',
-  },
-]
+const iconMap: Record<string, any> = {
+  baby: Baby,
+  toddler: Baby,
+  preschool: GraduationCap,
+  school: GraduationCap,
+  teen: Users,
+  smartphone: Smartphone,
+  lock: Lock,
+  clock: Clock,
+  globe: Globe,
+  bell: Bell,
+}
 
-const faqItems = [
-  {
-    question: 'Apakah gadget harus dilarang total?',
-    answer:
-      'Tidak. Yang penting adalah keseimbangan, durasi, dan pendampingan.',
-  },
-  {
-    question: 'Bagaimana menegur anak yang kecanduan gadget?',
-    answer:
-      'Gunakan pendekatan empatik dan buat aturan bersama.',
-  },
-  {
-    question: 'Apakah gadget untuk belajar diperbolehkan?',
-    answer:
-      'Tentu. Penggunaan pendidikan tidak termasuk screen time hiburan.',
-  },
-  {
-    question: 'Kapan anak boleh punya smartphone sendiri?',
-    answer:
-      'Idealnya setelah usia 12–13 tahun dengan pengawasan.',
-  },
-  {
-    question: 'Bagaimana jika anak marah saat dibatasi?',
-    answer:
-      'Tetap tenang, konsisten, dan tawarkan alternatif aktivitas.',
-  },
-  {
-    question: 'Apakah gadget di kamar tidur berbahaya?',
-    answer:
-      'Ya, karena mengganggu kualitas tidur anak.',
-  },
-]
+const screenTimeData = computed(() =>
+  screenTimeItems.value.map((item) => ({
+    ...item,
+    icon: iconMap[item.iconName] || Baby,
+  }))
+)
 
-const familyRules = [
-  { emoji: "🚫", rule: "Tidak ada gadget saat makan bersama" },
-  { emoji: "🌙", rule: "Gadget dikumpulkan 1 jam sebelum tidur" },
-  { emoji: "📚", rule: "Selesaikan PR sebelum bermain gadget" },
-  { emoji: "🕐", rule: "Patuhi batas waktu screen time harian" },
-  { emoji: "🛏️", rule: "Tidak ada gadget di kamar tidur anak" },
-  { emoji: "👀", rule: "Orang tua berhak memantau aktivitas digital" },
-  { emoji: "📴", rule: "Gadget dimatikan saat beribadah" },
-  { emoji: "🤝", rule: "Ceritakan jika ada konten yang mengganggu" },
-];
+const parentalSteps = computed(() =>
+  parentalStepItems.value.map((step) => ({
+    ...step,
+    icon: iconMap[step.iconName] || Smartphone,
+  }))
+)
+
+onMounted(async () => {
+  const panduan = await fetchPanduan()
+  screenTimeItems.value = panduan.screenTime
+  parentalStepItems.value = panduan.parentalSteps
+  faqItems.value = panduan.faqItems
+  familyRules.value = panduan.familyRules
+})
 
 </script>
 

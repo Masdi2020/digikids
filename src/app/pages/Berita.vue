@@ -1,26 +1,30 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 
 import { Calendar, Clock, Search, ChevronRight, ArrowRight, User } from 'lucide-vue-next'
 
-import { BERITA_ARTICLES } from '../data/articles'
+import type { Article } from '../data/articles'
+import { fetchArticles } from '../lib/api'
 
-const categories = [
-  'Semua',
-  'Kesehatan Global',
-  'Penelitian',
-  'Regulasi',
-  'Kesehatan',
-  'Pendidikan',
-]
+const articles = ref<Article[]>([])
+
+onMounted(async () => {
+  const all = await fetchArticles()
+  articles.value = all.filter((a) => a.type === 'berita')
+})
 
 const activeCategory = ref('Semua')
 const search = ref('')
 
+const categories = computed(() => {
+  const unique = Array.from(new Set(articles.value.map((a) => a.category))).filter(Boolean)
+  return ['Semua', ...unique]
+})
+
 const filtered = computed(() => {
-  return BERITA_ARTICLES.filter((a) => {
+  return articles.value.filter((a) => {
     const matchCat = activeCategory.value === 'Semua' || a.category === activeCategory.value
 
     const matchSearch =

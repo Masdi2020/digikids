@@ -1,8 +1,8 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <!-- eslint-disable vue/block-lang -->
 <!-- eslint-disable vue/multi-word-component-names -->
-<script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+<script setup lang="ts">
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { RouterLink } from 'vue-router'
 import EmblaCarousel from 'embla-carousel'
 
@@ -19,13 +19,17 @@ import {
   Calendar,
 } from 'lucide-vue-next'
 
-// ── Data (ganti dengan import dari file data sebenarnya) ──
-import { BERITA_ARTICLES, BAHAYA_ARTICLES, ALTERNATIF_ARTICLES } from '../data/articles'
+import type { Article } from '../data/articles'
+import { fetchArticles } from '../lib/api'
 
 // ──────────────────────────────────────────────
 // HERO SLIDER
 // ──────────────────────────────────────────────
-const heroSlides = BERITA_ARTICLES.slice(0, 5)
+const allArticles = ref<Article[]>([])
+const beritaArticles = computed(() => allArticles.value.filter((a) => a.type === 'berita'))
+const bahayaArticles = computed(() => allArticles.value.filter((a) => a.type === 'bahaya'))
+const alternatifArticles = computed(() => allArticles.value.filter((a) => a.type === 'alternatif'))
+const heroSlides = computed(() => beritaArticles.value.slice(0, 5))
 const selectedIndex = ref(0)
 let emblaApi = null
 let autoplayTimer = null
@@ -59,7 +63,10 @@ function scrollTo(i) {
   emblaApi?.scrollTo(i)
 }
 
-onMounted(() => initEmbla())
+onMounted(async () => {
+  allArticles.value = await fetchArticles()
+  initEmbla()
+})
 onUnmounted(() => {
   clearInterval(autoplayTimer)
 
@@ -71,9 +78,9 @@ onUnmounted(() => {
 // ──────────────────────────────────────────────
 // BAHAYA + ALTERNATIF + BERITA
 // ──────────────────────────────────────────────
-const bahayaArticles = BAHAYA_ARTICLES.slice(0, 3)
-const alternatifArticles = ALTERNATIF_ARTICLES.slice(0, 3)
-const beritaArticles = BERITA_ARTICLES.slice(0, 4)
+const bahayaPreview = computed(() => bahayaArticles.value.slice(0, 3))
+const alternatifPreview = computed(() => alternatifArticles.value.slice(0, 3))
+const beritaPreview = computed(() => beritaArticles.value.slice(0, 4))
 
 const cardColors = [
   {
@@ -218,7 +225,7 @@ const cardColors = [
 
         <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
           <RouterLink
-            v-for="art in bahayaArticles"
+            v-for="art in bahayaPreview"
             :key="art.id"
             :to="`/artikel/${art.id}`"
             class="group relative bg-slate-800/70 border border-slate-700/60 rounded-2xl overflow-hidden hover:border-rose-500/40 hover:-translate-y-1 transition-all duration-300 flex flex-col"
@@ -295,7 +302,7 @@ const cardColors = [
 
         <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
           <RouterLink
-            v-for="(art, i) in alternatifArticles"
+            v-for="(art, i) in alternatifPreview"
             :key="art.id"
             :to="`/artikel/${art.id}`"
             class="group bg-white rounded-2xl overflow-hidden shadow-sm border border-emerald-100 hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col"
@@ -429,7 +436,7 @@ const cardColors = [
 
         <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
           <RouterLink
-            v-for="art in beritaArticles"
+            v-for="art in beritaPreview"
             :key="art.id"
             :to="`/artikel/${art.id}`"
             class="group bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 flex flex-col"

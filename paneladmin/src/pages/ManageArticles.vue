@@ -115,19 +115,19 @@ function openDelete(article: Article) {
   deletingArticle.value = article
 }
 
-function handleFormSubmit(article: Article) {
+async function handleFormSubmit(article: Article) {
   if (editingArticle.value) {
-    adminStore.updateArticle(article)
+    await adminStore.updateArticle(article)
   } else {
-    adminStore.addArticle(article)
+    await adminStore.addArticle(article)
   }
   showForm.value = false
   editingArticle.value = null
 }
 
-function handleDelete() {
+async function handleDelete() {
   if (deletingArticle.value) {
-    adminStore.deleteArticle(deletingArticle.value.id)
+    await adminStore.deleteArticle(deletingArticle.value.id)
     deletingArticle.value = null
   }
 }

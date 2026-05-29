@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import {
   Play,
   X,
@@ -9,156 +9,31 @@ import {
   Search,
   ThumbsUp
 } from "lucide-vue-next";
+import type { Video } from '../data/videos'
+import { VIDEO_CATEGORIES } from '../data/videos'
+import { fetchVideos } from '../lib/api'
 
-const vidImg1 = "https://images.unsplash.com/photo-1758873272808-5580ed7deb44?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=800";
-const vidImg2 = "https://images.unsplash.com/photo-1505976442149-53a82393903b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=800";
-const vidImg3 = "https://images.unsplash.com/photo-1647188443883-9be7cee25341?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=800";
-const vidImg4 = "https://images.unsplash.com/photo-1758687126549-3bfd368e59a8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=800";
-const vidImg5 = "https://images.unsplash.com/photo-1761986758458-205d30cc9135?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=800";
-const vidImg6 = "https://images.unsplash.com/photo-1583238829785-7ba8a888bb72?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=800";
-const vidImg7 = "https://images.unsplash.com/flagged/photo-1551887373-6edba6dacbb1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=800";
-const vidImg8 = "https://images.unsplash.com/photo-1609173706484-78700d4ed198?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=800";
-const vidImg9 = "https://images.unsplash.com/photo-1652688898581-8f4878c942e5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=800";
+const categories = VIDEO_CATEGORIES
+const videos = ref<Video[]>([])
 
-interface Video {
-  id: number;
-  title: string;
-  duration: string;
-  views: string;
-  likes: string;
-  category: string;
-  tag: string;
-  img: string;
-  youtubeId: string;
-  featured?: boolean;
-}
-
-const categories = [
-  "Semua",
-  "Untuk Orang Tua",
-  "Untuk Anak",
-  "Parental Control",
-  "Kesehatan",
-  "Aktivitas"
-];
-
-const videos: Video[] = [
-  {
-    id: 1,
-    title: "Mengapa Screen Time Berlebih Berbahaya? Penjelasan Dokter Anak",
-    duration: "12:34",
-    views: "24.5K",
-    likes: "1.2K",
-    category: "Untuk Orang Tua",
-    tag: "🩺 Dokter",
-    img: vidImg1,
-    youtubeId: "dQw4w9WgXcQ",
-    featured: true,
-  },
-  {
-    id: 2,
-    title: "Cara Mengatur Google Family Link untuk Anak",
-    duration: "08:15",
-    views: "18.3K",
-    likes: "956",
-    category: "Parental Control",
-    tag: "🔒 Tutorial",
-    img: vidImg2,
-    youtubeId: "dQw4w9WgXcQ",
-  },
-  {
-    id: 3,
-    title: "Dampak Gadget pada Perkembangan Otak Anak Usia Dini",
-    duration: "15:22",
-    views: "31.7K",
-    likes: "2.1K",
-    category: "Kesehatan",
-    tag: "🧠 Ilmiah",
-    img: vidImg3,
-    youtubeId: "dQw4w9WgXcQ",
-  },
-  {
-    id: 4,
-    title: "5 Cara Seru Mengalihkan Anak dari Gadget",
-    duration: "07:48",
-    views: "42.1K",
-    likes: "3.4K",
-    category: "Aktivitas",
-    tag: "🎮 Tips",
-    img: vidImg4,
-    youtubeId: "dQw4w9WgXcQ",
-  },
-  {
-    id: 5,
-    title: "Panduan Lengkap Screen Time untuk Anak 3-12 Tahun",
-    duration: "18:56",
-    views: "15.9K",
-    likes: "887",
-    category: "Untuk Orang Tua",
-    tag: "📋 Panduan",
-    img: vidImg5,
-    youtubeId: "dQw4w9WgXcQ",
-  },
-  {
-    id: 6,
-    title: "Aktivitas Seni Kreatif untuk Anak tanpa Gadget",
-    duration: "09:30",
-    views: "28.4K",
-    likes: "1.8K",
-    category: "Aktivitas",
-    tag: "🎨 Kreatif",
-    img: vidImg6,
-    youtubeId: "dQw4w9WgXcQ",
-  },
-  {
-    id: 7,
-    title: "Membaca Bersama Anak: Manfaat & Cara Memulai",
-    duration: "06:12",
-    views: "11.2K",
-    likes: "743",
-    category: "Untuk Anak",
-    tag: "📚 Literasi",
-    img: vidImg7,
-    youtubeId: "dQw4w9WgXcQ",
-  },
-  {
-    id: 8,
-    title: "Kisah Nyata: Keluarga Berhasil Lepas dari Kecanduan Gadget",
-    duration: "21:05",
-    views: "56.8K",
-    likes: "4.7K",
-    category: "Untuk Orang Tua",
-    tag: "❤️ Kisah Nyata",
-    img: vidImg8,
-    youtubeId: "dQw4w9WgXcQ",
-  },
-  {
-    id: 9,
-    title: "Olahraga Seru untuk Anak di Rumah Tanpa Peralatan",
-    duration: "13:20",
-    views: "19.6K",
-    likes: "1.3K",
-    category: "Aktivitas",
-    tag: "⚽ Olahraga",
-    img: vidImg9,
-    youtubeId: "dQw4w9WgXcQ",
-  },
-];
+onMounted(async () => {
+  videos.value = await fetchVideos()
+})
 
 const activeCategory = ref("Semua");
 const search = ref("");
 const selectedVideo = ref<Video | null>(null);
 
 const filtered = computed(() =>
-  videos.filter((v) => {
+  videos.value.filter((v) => {
     const matchCat = activeCategory.value === "Semua" || v.category === activeCategory.value;
     const matchSearch = v.title.toLowerCase().includes(search.value.toLowerCase());
     return matchCat && matchSearch;
   })
 )
 
-const featured = computed(() => filtered.value.find((v) => !v.featured) ?? null);
-const rest = computed(() => filtered.value.filter((v) => !v.featured))
+const featured = computed(() => filtered.value.find((v) => v.featured) ?? filtered.value[0] ?? null);
+const rest = computed(() => filtered.value.filter((v) => v.id !== featured.value?.id))
 </script>
 
 <template>

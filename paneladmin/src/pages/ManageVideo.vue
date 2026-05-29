@@ -116,19 +116,19 @@ function openDelete(video: Video) {
   deletingVideo.value = video
 }
 
-function handleFormSubmit(video: Video) {
+async function handleFormSubmit(video: Video) {
   if (editingVideo.value) {
-    adminStore.updateVideo(video)
+    await adminStore.updateVideo(video)
   } else {
-    adminStore.addVideo(video)
+    await adminStore.addVideo(video)
   }
   showForm.value = false
   editingVideo.value = null
 }
 
-function handleDelete() {
+async function handleDelete() {
   if (deletingVideo.value) {
-    adminStore.deleteVideo(deletingVideo.value.id)
+    await adminStore.deleteVideo(deletingVideo.value.id)
     deletingVideo.value = null
   }
 }

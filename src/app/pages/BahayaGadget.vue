@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 
 import {
@@ -17,7 +17,8 @@ import {
   User,
 } from 'lucide-vue-next'
 
-import { BAHAYA_ARTICLES } from '../data/articles'
+import type { Article } from '../data/articles'
+import { fetchArticles } from '../lib/api'
 
 const categoryIcons: Record<string, any> = {
   'Kesehatan Mata': Eye,
@@ -107,9 +108,15 @@ const dangerStats = [
 ]
 
 const search = ref('')
+const articles = ref<Article[]>([])
+
+onMounted(async () => {
+  const all = await fetchArticles()
+  articles.value = all.filter((a) => a.type === 'bahaya')
+})
 
 const filtered = computed(() => {
-  return BAHAYA_ARTICLES.filter((a) => {
+  return articles.value.filter((a) => {
     return (
       a.title.toLocaleLowerCase().includes(search.value.toLocaleLowerCase()) ||
       a.excerpt.toLowerCase().includes(search.value.toLowerCase()) ||

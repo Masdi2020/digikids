@@ -120,7 +120,7 @@
             <button @click="editingFaqIdx = i; faqForm = { ...item }" class="p-1.5 rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-100 transition-colors">
               <Pencil class="w-3.5 h-3.5" />
             </button>
-            <button @click="adminStore.faqItems.splice(i, 1)" class="p-1.5 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 transition-colors">
+            <button @click="removeFaq(i)" class="p-1.5 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 transition-colors">
               <Trash2 class="w-3.5 h-3.5" />
             </button>
           </div>
@@ -142,7 +142,7 @@
         </div>
       </div>
       <button
-        @click="adminStore.faqItems.push({ id: `faq-${Date.now()}`, question: 'Pertanyaan baru', answer: 'Jawaban...' })"
+        @click="addFaq"
         class="w-full py-3 border-2 border-dashed border-slate-300 rounded-xl text-slate-500 text-sm font-semibold hover:border-amber-400 hover:text-amber-600 hover:bg-amber-50 transition-all flex items-center justify-center gap-2"
       >
         <Plus class="w-4 h-4" /> Tambah FAQ
@@ -161,14 +161,15 @@
             v-model="rule.rule"
             type="text"
             class="flex-1 text-sm text-slate-700 font-medium bg-transparent focus:outline-none focus:ring-2 focus:ring-emerald-400 rounded-lg px-2 py-1"
+            @blur="adminStore.savePanduan()"
           />
-          <button @click="adminStore.familyRules.splice(i, 1)" class="p-1.5 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 transition-colors flex-shrink-0">
+          <button @click="removeRule(i)" class="p-1.5 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 transition-colors flex-shrink-0">
             <Trash2 class="w-3.5 h-3.5" />
           </button>
         </div>
       </div>
       <button
-        @click="adminStore.familyRules.push({ id: `rule-${Date.now()}`, emoji: '✅', rule: 'Aturan baru' })"
+        @click="addRule"
         class="w-full py-3 border-2 border-dashed border-slate-300 rounded-xl text-slate-500 text-sm font-semibold hover:border-emerald-400 hover:text-emerald-600 hover:bg-emerald-50 transition-all flex items-center justify-center gap-2"
       >
         <Plus class="w-4 h-4" /> Tambah Aturan
@@ -196,24 +197,47 @@ const activeTab = ref('screentime')
 const editingSTIdx = ref<number | null>(null)
 const stForm = ref<Partial<ScreenTimeItem>>({})
 
-function saveScreenTime(i: number) {
+async function saveScreenTime(i: number) {
   Object.assign(adminStore.screenTime[i], stForm.value)
   editingSTIdx.value = null
+  await adminStore.savePanduan()
 }
 
 const editingStepIdx = ref<number | null>(null)
 const stepForm = ref<Partial<ParentalStep>>({})
 
-function saveStep(i: number) {
+async function saveStep(i: number) {
   Object.assign(adminStore.parentalSteps[i], stepForm.value)
   editingStepIdx.value = null
+  await adminStore.savePanduan()
 }
 
 const editingFaqIdx = ref<number | null>(null)
 const faqForm = ref<Partial<FaqItem>>({})
 
-function saveFaq(i: number) {
+async function saveFaq(i: number) {
   Object.assign(adminStore.faqItems[i], faqForm.value)
   editingFaqIdx.value = null
+  await adminStore.savePanduan()
+}
+
+async function addFaq() {
+  adminStore.faqItems.push({ id: `faq-${Date.now()}`, question: 'Pertanyaan baru', answer: 'Jawaban...' })
+  await adminStore.savePanduan()
+}
+
+async function removeFaq(index: number) {
+  adminStore.faqItems.splice(index, 1)
+  await adminStore.savePanduan()
+}
+
+async function addRule() {
+  adminStore.familyRules.push({ id: `rule-${Date.now()}`, emoji: '✅', rule: 'Aturan baru' })
+  await adminStore.savePanduan()
+}
+
+async function removeRule(index: number) {
+  adminStore.familyRules.splice(index, 1)
+  await adminStore.savePanduan()
 }
 </script>
