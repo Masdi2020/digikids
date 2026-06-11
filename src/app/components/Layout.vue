@@ -176,12 +176,12 @@ onUnmounted(() => {
                 <Smartphone class="w-5 h-5 text-white" />
               </div>
 
-              <span class="text-white font-black text-xl"> BijakGadget </span>
+              <span class="text-white font-black text-xl"> Digikids </span>
             </div>
 
             <p class="text-slate-400 text-sm leading-relaxed max-w-xs">
               Portal edukasi untuk orang tua dan anak tentang penggunaan gadget yang bijak, sehat,
-              dan bertanggung jawab. Program Pengabdian Masyarakat RT 045 Karang Joang.
+              dan bertanggung jawab.
             </p>
           </div>
 
@@ -219,18 +219,11 @@ onUnmounted(() => {
 
         <div class="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p class="text-slate-500 text-xs">
-            © 2025 BijakGadget — Program Pengabdian Masyarakat RT 045 Karang Joang
+            © 2025 Digikids — Program Pengabdian Masyarakat RT 045 Karang Joang
           </p>
 
           <div class="flex items-center gap-4">
             <p class="text-slate-500 text-xs">Dibuat dengan ❤️ untuk generasi sehat</p>
-
-            <RouterLink
-              to="/paneladmin"
-              class="text-slate-600 hover:text-sky-400 text-xs border border-slate-700 hover:border-sky-600 px-3 py-1 rounded-lg transition-all"
-            >
-              Panel Admin
-            </RouterLink>
           </div>
         </div>
       </div>
