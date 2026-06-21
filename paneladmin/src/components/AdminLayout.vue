@@ -14,11 +14,11 @@
       ]"
     >
       <div class="flex items-center h-16 px-4 border-b border-slate-800 gap-3 flex-shrink-0">
-        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center flex-shrink-0">
-          <Smartphone class="w-4 h-4 text-white" />
+        <div class="w-8 h-8 flex items-center justify-center flex-shrink-0">
+          <img :src="Logo" alt="Logo" class="w-full h-full object-contain" >
         </div>
         <div v-if="!sidebarCollapsed" class="flex flex-col leading-none overflow-hidden">
-          <span class="text-sky-400 font-black text-sm tracking-tight whitespace-nowrap">BijakGadget</span>
+          <span class="text-sky-400 font-black text-sm tracking-tight whitespace-nowrap">DIGIKIDS</span>
           <span class="text-slate-400 text-xs font-medium">Panel Admin</span>
         </div>
       </div>
@@ -75,9 +75,11 @@
 import { ref, computed } from 'vue'
 import { RouterLink, RouterView, useRoute } from 'vue-router'
 import {
-  Smartphone, Menu, ChevronLeft, ChevronRight,
+  Menu, ChevronLeft, ChevronRight,
   LayoutDashboard, Newspaper, AlertTriangle, Gamepad2, BookOpen, Video,
 } from 'lucide-vue-next'
+
+import Logo from '/Logo.png'
 
 const route = useRoute()
 const sidebarOpen = ref(false)

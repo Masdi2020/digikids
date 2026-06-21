@@ -4,7 +4,6 @@ import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { RouterView, RouterLink, useRoute } from 'vue-router'
 
 import {
-  Smartphone,
   Menu,
   X,
   Home,
@@ -91,9 +90,7 @@ onUnmounted(() => {
             </div>
 
             <div class="flex flex-col leading-none">
-              <span class="text-sky-600 font-black text-lg tracking-tight"> DIGI </span>
-
-              <span class="text-slate-700 font-bold text-xs tracking-widest uppercase"> KIDS </span>
+              <span class="text-sky-600 font-black text-lg tracking-tight"> DIGIKIDS </span>
             </div>
           </RouterLink>
 
@@ -171,12 +168,12 @@ onUnmounted(() => {
           <div class="lg:col-span-2">
             <div class="flex items-center gap-2.5 mb-4">
               <div
-                class="w-9 h-9 rounded-xl bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center"
+                class="w-9 h-9 flex items-center justify-center"
               >
-                <Smartphone class="w-5 h-5 text-white" />
+                <img :src="Logo" alt="Logo" class="w-full h-full object-contain" >
               </div>
 
-              <span class="text-white font-black text-xl"> Digikids </span>
+              <span class="text-white font-black text-xl"> DIGIKIDS </span>
             </div>
 
             <p class="text-slate-400 text-sm leading-relaxed max-w-xs">
