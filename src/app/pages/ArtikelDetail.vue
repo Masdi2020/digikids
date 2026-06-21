@@ -293,51 +293,53 @@ const goBack = () => {
         </article>
 
         <!-- SIDEBAR -->
-        <aside class="space-y-6">
-          <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 sticky top-24">
-            <h3 class="text-slate-800 font-bold text-sm mb-3 border-b border-slate-100 pb-3">
-              Ringkasan Artikel
-            </h3>
+        <aside>
+          <div class="sticky top-24 space-y-3">
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
+              <h3 class="text-slate-800 font-bold text-sm mb-3 border-b border-slate-100 pb-3">
+                Ringkasan Artikel
+              </h3>
 
-            <p class="text-slate-500 text-xs leading-relaxed mb-4">
-              {{ article.excerpt }}
-            </p>
-          </div>
+              <p class="text-slate-500 text-xs leading-relaxed mb-4">
+                {{ article.excerpt }}
+              </p>
+            </div>
 
-          <!-- Related -->
-          <div
-            v-if="related.length > 0"
-            class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100"
-          >
-            <h3 class="text-slate-800 font-bold text-sm mb-4">Artikel Terkait</h3>
+            <!-- Related -->
+            <div
+              v-if="related.length > 0"
+              class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100"
+            >
+              <h3 class="text-slate-800 font-bold text-sm mb-4">Artikel Terkait</h3>
 
-            <div class="space-y-4">
-              <RouterLink
-                v-for="rel in related"
-                :key="rel.id"
-                :to="`/artikel/${rel.id}`"
-                class="flex gap-3 group"
-              >
-                <img
-                  :src="rel.img"
-                  :alt="rel.title"
-                  class="w-16 h-16 rounded-xl object-cover flex-shrink-0"
-                />
+              <div class="space-y-4">
+                <RouterLink
+                  v-for="rel in related"
+                  :key="rel.id"
+                  :to="`/artikel/${rel.id}`"
+                  class="flex gap-3 group"
+                >
+                  <img
+                    :src="rel.img"
+                    :alt="rel.title"
+                    class="w-16 h-16 rounded-xl object-cover flex-shrink-0"
+                  />
 
-                <div class="flex-1 min-w-0">
-                  <p
-                    class="text-slate-700 text-xs font-semibold leading-snug mb-1.5 group-hover:text-sky-600 transition-colors line-clamp-2"
-                  >
-                    {{ rel.title }}
-                  </p>
+                  <div class="flex-1 min-w-0">
+                    <p
+                      class="text-slate-700 text-xs font-semibold leading-snug mb-1.5 group-hover:text-sky-600 transition-colors line-clamp-2"
+                    >
+                      {{ rel.title }}
+                    </p>
 
-                  <div class="flex items-center gap-2 text-xs text-slate-400">
-                    <Clock class="w-3 h-3" />
+                    <div class="flex items-center gap-2 text-xs text-slate-400">
+                      <Clock class="w-3 h-3" />
 
-                    <span>{{ rel.readTime }}</span>
+                      <span>{{ rel.readTime }}</span>
+                    </div>
                   </div>
-                </div>
-              </RouterLink>
+                </RouterLink>
+              </div>
             </div>
           </div>
         </aside>

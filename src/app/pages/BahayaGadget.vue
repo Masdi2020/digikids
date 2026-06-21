@@ -285,9 +285,7 @@ const filtered = computed(() => {
 
               <span
                 :class="[
-                  'absolute top-3 left-3 text-xs font-semibold px-2.5 py-1 rounded-full',
-                  categoryColors[article.category]?.bg,
-                  categoryColors[article.category]?.text,
+                  'absolute top-3 left-3 bg-white/90 text-red-400 text-xs font-semibold px-2.5 py-1 rounded-full'
                 ]"
               >
                 {{ article.category }}
