@@ -10,7 +10,7 @@ import BahayaGadget from './pages/BahayaGadget.vue'
 import PenggantiGadget from './pages/PenggantiGadget.vue'
 import Panduan from './pages/Panduan.vue'
 import VideoEdukasi from './pages/VideoEdukasi.vue'
-// import AboutUs from './pages/AboutUs.vue'
+import AboutUs from './pages/AboutUs.vue'
 import ArtikelDetail from './pages/ArtikelDetail.vue'
 
 // // ADMIN
@@ -59,61 +59,18 @@ const routes = [
         name: 'video-edukasi',
         component: VideoEdukasi,
       },
-      //   {
-      //     path: 'about',
-      //     name: 'about',
-      //     component: AboutUs,
-      //   },
+        {
+          path: 'about',
+          name: 'about',
+          component: AboutUs,
+        },
       {
         path: 'artikel/:id',
         name: 'artikel-detail',
         component: ArtikelDetail,
       },
     ],
-  },
-
-  //   {
-  //     path: '/paneladmin',
-  //     component: AdminRoot,
-  //     children: [
-  //       {
-  //         path: '',
-  //         component: AdminLayout,
-  //         children: [
-  //           {
-  //             path: '',
-  //             name: 'dashboard',
-  //             component: Dashboard,
-  //           },
-  //           {
-  //             path: 'berita',
-  //             name: 'manage-berita',
-  //             component: ManageBerita,
-  //           },
-  //           {
-  //             path: 'bahaya-gadget',
-  //             name: 'manage-bahaya',
-  //             component: ManageBahaya,
-  //           },
-  //           {
-  //             path: 'alternatif',
-  //             name: 'manage-alternatif',
-  //             component: ManageAlternatif,
-  //           },
-  //           {
-  //             path: 'panduan',
-  //             name: 'manage-panduan',
-  //             component: ManagePanduan,
-  //           },
-  //           {
-  //             path: 'video-edukasi',
-  //             name: 'manage-video',
-  //             component: ManageVideo,
-  //           },
-  //         ],
-  //       },
-  //     ],
-  //   },
+  }
 ]
 
 const router = createRouter({

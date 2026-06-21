@@ -4,7 +4,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { RouterLink } from 'vue-router'
-import EmblaCarousel from 'embla-carousel'
+import EmblaCarousel, { type EmblaCarouselType } from 'embla-carousel'
 
 import {
   ChevronLeft,
@@ -31,35 +31,36 @@ const bahayaArticles = computed(() => allArticles.value.filter((a) => a.type ===
 const alternatifArticles = computed(() => allArticles.value.filter((a) => a.type === 'alternatif'))
 const heroSlides = computed(() => beritaArticles.value.slice(0, 5))
 const selectedIndex = ref(0)
-let emblaApi = null
-let autoplayTimer = null
 
-// Embla carousel diinisialisasi via onMounted
-const emblaRef = ref(null)
+let emblaApi: EmblaCarouselType | undefined
+let autoplayTimer: ReturnType<typeof setInterval> | undefined
 
-async function initEmbla() {
+const emblaRef = ref<HTMLElement | null>(null)
+
+function initEmbla() {
   if (!emblaRef.value) return
 
-  emblaApi = EmblaCarousel(emblaRef.value, {
-    loop: true,
-  })
+  const api = EmblaCarousel(emblaRef.value, { loop: true })
+  emblaApi = api
 
-  emblaApi.on('select', () => {
-    selectedIndex.value = emblaApi.selectedScrollSnap()
+  api.on('select', () => {
+    selectedIndex.value = api.selectedScrollSnap()
   })
 
   autoplayTimer = setInterval(() => {
-    emblaApi?.scrollNext()
+    api.scrollNext()
   }, 5500)
 }
 
 function scrollPrev() {
   emblaApi?.scrollPrev()
 }
+
 function scrollNext() {
   emblaApi?.scrollNext()
 }
-function scrollTo(i) {
+
+function scrollTo(i: number) {
   emblaApi?.scrollTo(i)
 }
 
@@ -67,12 +68,10 @@ onMounted(async () => {
   allArticles.value = await fetchArticles()
   initEmbla()
 })
-onUnmounted(() => {
-  clearInterval(autoplayTimer)
 
-  if (emblaApi) {
-    emblaApi.destroy()
-  }
+onUnmounted(() => {
+  if (autoplayTimer) clearInterval(autoplayTimer)
+  emblaApi?.destroy()
 })
 
 // ──────────────────────────────────────────────
@@ -91,7 +90,11 @@ const cardColors = [
   },
   { bg: 'bg-teal-500', light: 'bg-teal-50', text: 'text-teal-700', border: 'border-teal-200' },
   { bg: 'bg-cyan-500', light: 'bg-cyan-50', text: 'text-cyan-700', border: 'border-cyan-200' },
-]
+] as const
+
+function colorAt(i: number) {
+  return cardColors[i % cardColors.length] ?? cardColors[0]
+}
 </script>
 
 <template>
@@ -316,7 +319,7 @@ const cardColors = [
               <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
               <span
                 :class="[
-                  cardColors[i].bg,
+                  colorAt(i).bg,
                   'absolute top-3 left-3 text-white text-xs font-bold px-2.5 py-1 rounded-full',
                 ]"
               >
@@ -327,7 +330,7 @@ const cardColors = [
               <h3
                 :class="[
                   'text-slate-800 font-bold text-sm leading-snug mb-2 transition-colors line-clamp-2',
-                  `group-hover:${cardColors[i].text}`,
+                  `group-hover:${colorAt(i).text}`,
                 ]"
               >
                 {{ art.title }}
@@ -338,7 +341,7 @@ const cardColors = [
               <div
                 :class="[
                   'flex items-center gap-1.5 text-xs font-semibold group-hover:gap-2.5 transition-all',
-                  cardColors[i].text,
+                  colorAt(i).text,
                 ]"
               >
                 Baca Selengkapnya <ArrowRight class="w-3.5 h-3.5" />

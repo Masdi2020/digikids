@@ -1,6 +1,6 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, type Component } from 'vue'
 
 import {
   ChevronDown,
@@ -33,7 +33,7 @@ const parentalStepItems = ref<ParentalStep[]>([])
 const faqItems = ref<FaqItem[]>([])
 const familyRules = ref<FamilyRule[]>([])
 
-const iconMap: Record<string, any> = {
+const iconMap: Record<string, Component> = {
   baby: Baby,
   toddler: Baby,
   preschool: GraduationCap,

@@ -130,7 +130,7 @@ const goBack = () => {
 
           <ChevronRight class="w-4 h-4" />
 
-          <RouterLink :to="badge?.path" class="hover:text-white transition-colors">
+          <RouterLink :to="badge?.path ?? '/'" class="hover:text-white transition-colors">
             {{ badge?.label }}
           </RouterLink>
 

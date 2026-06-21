@@ -93,6 +93,9 @@ const filtered = computed(() => {
   })
 })
 
+const featured = computed(() => filtered.value[0])
+const rest = computed(() => filtered.value.slice(1))
+
 const stats = [
   { val: '6', label: 'Kategori Aktivitas', sub: 'untuk semua usia' },
   { val: '100+', label: 'Ide Kegiatan', sub: 'praktis dan mudah' },
@@ -180,15 +183,15 @@ const stats = [
       </div>
 
       <!-- Featured -->
-      <div v-if="filtered.length > 0" class="mb-8">
+      <div v-if="featured" class="mb-8">
         <RouterLink
-          :to="`/artikel/${filtered[0].id}`"
+          :to="`/artikel/${featured.id}`"
           class="group relative bg-white rounded-2xl overflow-hidden shadow-md border border-emerald-100 hover:shadow-xl hover:border-emerald-300 transition-all duration-300 grid lg:grid-cols-2"
         >
           <div class="relative h-60 lg:h-auto overflow-hidden">
             <img
-              :src="filtered[0].img"
-              :alt="filtered[0].title"
+              :src="featured.img"
+              :alt="featured.title"
               class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             />
 
@@ -197,17 +200,17 @@ const stats = [
             <div
               class="absolute top-4 left-4 flex items-center gap-1.5 bg-white/90 backdrop-blur-sm text-xs font-bold px-3 py-1.5 rounded-full"
               :class="
-                categoryColor[filtered[0].category]?.text || 'text-emerald-700'
+                categoryColor[featured.category]?.text || 'text-emerald-700'
               "
             >
               <component
                 :is="
-                  categoryIcon[filtered[0].category] || TreePine
+                  categoryIcon[featured.category] || TreePine
                 "
                 class="w-3.5 h-3.5"
               />
 
-              {{ filtered[0].category }}
+              {{ featured.category }}
             </div>
           </div>
 
@@ -219,22 +222,22 @@ const stats = [
             <h2
               class="text-slate-800 font-black text-xl lg:text-2xl mb-3 leading-snug group-hover:text-emerald-700 transition-colors"
             >
-              {{ filtered[0].title }}
+              {{ featured.title }}
             </h2>
 
             <p class="text-slate-500 text-sm leading-relaxed mb-5 line-clamp-3">
-              {{ filtered[0].excerpt }}
+              {{ featured.excerpt }}
             </p>
 
             <div class="flex items-center gap-4 text-xs text-slate-400 mb-4">
               <span class="flex items-center gap-1">
                 <Calendar class="w-3.5 h-3.5" />
-                {{ filtered[0].date }}
+                {{ featured.date }}
               </span>
 
               <span class="flex items-center gap-1">
                 <Clock class="w-3.5 h-3.5" />
-                {{ filtered[0].readTime }}
+                {{ featured.readTime }}
               </span>
             </div>
 
@@ -257,7 +260,7 @@ const stats = [
 
         <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
           <RouterLink
-            v-for="article in filtered.slice(1)"
+            v-for="article in rest"
             :key="article.id"
             :to="`/artikel/${article.id}`"
             class="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col"

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, type Component } from 'vue'
 import { RouterLink } from 'vue-router'
 
 import {
@@ -20,7 +20,7 @@ import {
 import type { Article } from '../data/articles'
 import { fetchArticles } from '../lib/api'
 
-const categoryIcons: Record<string, any> = {
+const categoryIcons: Record<string, Component> = {
   'Kesehatan Mata': Eye,
   'Neurosains': Brain,
   'Kesehatan Tidur': Moon,
@@ -124,6 +124,9 @@ const filtered = computed(() => {
     )
   })
 })
+
+const featured = computed(() => filtered.value[0])
+const rest = computed(() => filtered.value.slice(1))
 </script>
 
 <template>
@@ -199,15 +202,15 @@ const filtered = computed(() => {
 
       <template v-else>
         <!-- FEATURED -->
-        <div class="mb-6">
+        <div v-if="featured"  class="mb-6">
           <RouterLink
-            :to="`/artikel/${filtered[0].id}`"
+            :to="`/artikel/${featured.id}`"
             class="group grid lg:grid-cols-2 bg-white rounded-2xl overflow-hidden shadow-md border border-rose-100 hover:shadow-xl hover:border-rose-200 transition-all duration-300"
           >
             <div class="relative h-60 lg:h-auto overflow-hidden">
               <img
-                :src="filtered[0].img"
-                :alt="filtered[0].title"
+                :src="featured.img"
+                :alt="featured.title"
                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
 
@@ -216,7 +219,7 @@ const filtered = computed(() => {
               <span
                 class="absolute top-4 left-4 bg-rose-600 text-white text-xs font-bold px-3 py-1 rounded-full"
               >
-                {{ filtered[0].category }}
+                {{ featured.category }}
               </span>
             </div>
 
@@ -232,22 +235,22 @@ const filtered = computed(() => {
               <h2
                 class="text-slate-800 font-black text-xl lg:text-2xl mb-3 leading-snug group-hover:text-rose-700 transition-colors"
               >
-                {{ filtered[0].title }}
+                {{ featured.title }}
               </h2>
 
               <p class="text-slate-500 text-sm leading-relaxed mb-5 line-clamp-3">
-                {{ filtered[0].excerpt }}
+                {{ featured.excerpt }}
               </p>
 
               <div class="flex items-center gap-4 text-xs text-slate-400 mb-4">
                 <span class="flex items-center gap-1">
                   <User class="w-3.5 h-3.5" />
-                  {{ filtered[0].author }}
+                  {{ featured.author }}
                 </span>
 
                 <span class="flex items-center gap-1">
                   <Clock class="w-3.5 h-3.5" />
-                  {{ filtered[0].readTime }}
+                  {{ featured.readTime }}
                 </span>
               </div>
 
@@ -263,9 +266,9 @@ const filtered = computed(() => {
         </div>
 
         <!-- GRID -->
-        <div v-if="filtered.length > 1" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div v-if="rest.length > 1" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
           <RouterLink
-            v-for="article in filtered.slice(1)"
+            v-for="article in rest"
             :key="article.id"
             :to="`/artikel/${article.id}`"
             :class="[
