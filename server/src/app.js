@@ -15,10 +15,27 @@ const allowedOrigins = (process.env.ALLOWED_ORIGINS || '')
   .map((o) => o.trim())
   .filter(Boolean)
 
+function isAllowedOrigin(origin) {
+  if (!origin || allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
+    return true
+  }
+
+  if (process.env.NODE_ENV !== 'production') {
+    try {
+      const url = new URL(origin)
+      return ['localhost', '127.0.0.1'].includes(url.hostname)
+    } catch {
+      return false
+    }
+  }
+
+  return false
+}
+
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin || allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
+      if (isAllowedOrigin(origin)) {
         callback(null, true)
         return
       }
@@ -54,6 +71,29 @@ function requireSupabase(req, res, next) {
     res.status(500).json({ error: 'Supabase is not configured on the server.' })
     return
   }
+  next()
+}
+
+async function requireAuth(req, res, next) {
+  if (!supabase) {
+    res.status(500).json({ error: 'Supabase is not configured on the server.' })
+    return
+  }
+
+  const authHeader = req.headers.authorization || ''
+  const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : ''
+  if (!token) {
+    res.status(401).json({ error: 'Authentication is required.' })
+    return
+  }
+
+  const { data, error } = await supabase.auth.getUser(token)
+  if (error || !data.user) {
+    res.status(401).json({ error: 'Invalid or expired session.' })
+    return
+  }
+
+  req.user = data.user
   next()
 }
 
@@ -106,7 +146,7 @@ app.get('/api/health', (req, res) => {
   res.json({ ok: true })
 })
 
-app.post('/api/uploads/image', upload.single('file'), async (req, res) => {
+app.post('/api/uploads/image', requireSupabase, requireAuth, upload.single('file'), async (req, res) => {
   try {
     const file = req.file
     if (!file) {
@@ -175,7 +215,7 @@ app.get('/api/articles/:id', requireSupabase, async (req, res) => {
   res.json(mapArticleRow(data))
 })
 
-app.post('/api/articles', requireSupabase, async (req, res) => {
+app.post('/api/articles', requireSupabase, requireAuth, async (req, res) => {
   const payload = req.body || {}
 
   const id = payload.id || `${payload.type || 'artikel'}-${slugify(payload.title || 'artikel')}-${Date.now()}`
@@ -206,7 +246,7 @@ app.post('/api/articles', requireSupabase, async (req, res) => {
   res.json(mapArticleRow(data))
 })
 
-app.put('/api/articles/:id', requireSupabase, async (req, res) => {
+app.put('/api/articles/:id', requireSupabase, requireAuth, async (req, res) => {
   const payload = req.body || {}
 
   const updateRow = {
@@ -234,7 +274,7 @@ app.put('/api/articles/:id', requireSupabase, async (req, res) => {
   res.json(mapArticleRow(data))
 })
 
-app.delete('/api/articles/:id', requireSupabase, async (req, res) => {
+app.delete('/api/articles/:id', requireSupabase, requireAuth, async (req, res) => {
   const { error } = await supabase.from('articles').delete().eq('id', req.params.id)
   if (error) {
     res.status(500).json({ error: error.message })
@@ -252,7 +292,7 @@ app.get('/api/videos', requireSupabase, async (req, res) => {
   res.json(data.map(mapVideoRow))
 })
 
-app.post('/api/videos', requireSupabase, async (req, res) => {
+app.post('/api/videos', requireSupabase, requireAuth, async (req, res) => {
   const payload = req.body || {}
 
   const insertRow = {
@@ -277,7 +317,7 @@ app.post('/api/videos', requireSupabase, async (req, res) => {
   res.json(mapVideoRow(data))
 })
 
-app.put('/api/videos/:id', requireSupabase, async (req, res) => {
+app.put('/api/videos/:id', requireSupabase, requireAuth, async (req, res) => {
   const payload = req.body || {}
 
   const updateRow = {
@@ -302,7 +342,7 @@ app.put('/api/videos/:id', requireSupabase, async (req, res) => {
   res.json(mapVideoRow(data))
 })
 
-app.delete('/api/videos/:id', requireSupabase, async (req, res) => {
+app.delete('/api/videos/:id', requireSupabase, requireAuth, async (req, res) => {
   const { error } = await supabase.from('videos').delete().eq('id', req.params.id)
   if (error) {
     res.status(500).json({ error: error.message })
@@ -336,7 +376,7 @@ app.get('/api/panduan', requireSupabase, async (req, res) => {
   })
 })
 
-app.put('/api/panduan', requireSupabase, async (req, res) => {
+app.put('/api/panduan', requireSupabase, requireAuth, async (req, res) => {
   const payload = req.body || {}
 
   const upsertRow = {

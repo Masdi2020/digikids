@@ -61,7 +61,17 @@
         <div class="flex-1">
           <h1 class="text-slate-800 font-bold text-sm">{{ currentPageTitle }}</h1>
         </div>
+        <span class="hidden sm:inline text-xs font-medium text-slate-500 truncate max-w-48">
+          {{ authStore.user?.email }}
+        </span>
         <span class="bg-sky-100 text-sky-700 text-xs font-bold px-3 py-1 rounded-full">Mode Admin</span>
+        <button
+          @click="handleLogout"
+          class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors"
+        >
+          <LogOut class="w-4 h-4" />
+          <span class="hidden sm:inline">Keluar</span>
+        </button>
       </header>
 
       <main class="flex-1 p-4 lg:p-6 overflow-auto">
@@ -73,15 +83,18 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { RouterLink, RouterView, useRoute } from 'vue-router'
+import { RouterLink, RouterView, useRoute, useRouter } from 'vue-router'
 import {
   Menu, ChevronLeft, ChevronRight,
-  LayoutDashboard, Newspaper, AlertTriangle, Gamepad2, BookOpen, Video,
+  LayoutDashboard, Newspaper, AlertTriangle, Gamepad2, BookOpen, Video, LogOut,
 } from 'lucide-vue-next'
+import { useAuthStore } from '../stores/authStore'
 
 import Logo from '/Logo.png'
 
 const route = useRoute()
+const router = useRouter()
+const authStore = useAuthStore()
 const sidebarOpen = ref(false)
 const sidebarCollapsed = ref(false)
 
@@ -108,5 +121,10 @@ const currentPageTitle = computed(() => pageTitles[route.path] ?? 'Panel Admin')
 function isActive(to: string) {
   if (to === '/') return route.path === '/'
   return route.path.startsWith(to)
+}
+
+async function handleLogout() {
+  await authStore.logout()
+  router.replace('/login')
 }
 </script>

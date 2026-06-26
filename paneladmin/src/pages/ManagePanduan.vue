@@ -33,6 +33,9 @@
             <button @click="editingSTIdx = i; stForm = { ...item }" class="p-1.5 rounded-lg bg-sky-50 text-sky-600 hover:bg-sky-100 transition-colors">
               <Pencil class="w-3.5 h-3.5" />
             </button>
+            <button @click="removeScreenTime(i)" class="p-1.5 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 transition-colors">
+              <Trash2 class="w-3.5 h-3.5" />
+            </button>
           </div>
         </div>
         <div class="grid grid-cols-2 gap-3 text-xs">
@@ -83,9 +86,14 @@
             <h4 class="font-bold text-slate-800 text-sm">{{ step.title }}</h4>
             <p class="text-slate-500 text-xs mt-1 line-clamp-2">{{ step.desc }}</p>
           </div>
-          <button @click="editingStepIdx = i; stepForm = { ...step }" class="p-1.5 rounded-lg bg-sky-50 text-sky-600 hover:bg-sky-100 transition-colors">
-            <Pencil class="w-3.5 h-3.5" />
-          </button>
+          <div class="flex gap-1 flex-shrink-0">
+            <button @click="editingStepIdx = i; stepForm = { ...step }" class="p-1.5 rounded-lg bg-sky-50 text-sky-600 hover:bg-sky-100 transition-colors">
+              <Pencil class="w-3.5 h-3.5" />
+            </button>
+            <button @click="removeStep(i)" class="p-1.5 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 transition-colors">
+              <Trash2 class="w-3.5 h-3.5" />
+            </button>
+          </div>
         </div>
         <div v-if="editingStepIdx === i" class="mt-3 space-y-3 pt-3 border-t border-slate-100">
           <div>
@@ -203,12 +211,27 @@ async function saveScreenTime(i: number) {
   await adminStore.savePanduan()
 }
 
+async function removeScreenTime(index: number) {
+  adminStore.screenTime.splice(index, 1)
+  if (editingSTIdx.value === index) editingSTIdx.value = null
+  await adminStore.savePanduan()
+}
+
 const editingStepIdx = ref<number | null>(null)
 const stepForm = ref<Partial<ParentalStep>>({})
 
 async function saveStep(i: number) {
   Object.assign(adminStore.parentalSteps[i], stepForm.value)
   editingStepIdx.value = null
+  await adminStore.savePanduan()
+}
+
+async function removeStep(index: number) {
+  adminStore.parentalSteps.splice(index, 1)
+  adminStore.parentalSteps.forEach((step, i) => {
+    step.step = i + 1
+  })
+  if (editingStepIdx.value === index) editingStepIdx.value = null
   await adminStore.savePanduan()
 }
 

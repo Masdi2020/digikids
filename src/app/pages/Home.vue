@@ -468,38 +468,5 @@ function colorAt(i: number) {
         </div>
       </div>
     </section>
-
-    <!-- ══════════════════════════════════════════
-         ABOUT STRIP
-    ══════════════════════════════════════════ -->
-    <section class="bg-slate-900 py-12">
-      <div
-        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-6"
-      >
-        <div>
-          <p class="text-slate-400 text-xs font-semibold uppercase tracking-widest mb-1">
-            Program Pengabdian Masyarakat
-          </p>
-          <h3 class="text-white font-black text-xl">BijakGadget — RT 045 Karang Joang</h3>
-          <p class="text-slate-400 text-sm mt-1">
-            Portal edukasi gratis untuk keluarga yang peduli masa depan digital anak.
-          </p>
-        </div>
-        <div class="flex gap-3 flex-shrink-0">
-          <RouterLink
-            to="/about"
-            class="inline-flex items-center gap-2 bg-white/10 border border-white/20 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-white/20 transition-all"
-          >
-            Tentang Kami
-          </RouterLink>
-          <RouterLink
-            to="/panduan"
-            class="inline-flex items-center gap-2 bg-sky-500 text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-sky-400 transition-all"
-          >
-            <BookOpen class="w-4 h-4" /> Mulai Belajar
-          </RouterLink>
-        </div>
-      </div>
-    </section>
   </div>
 </template>

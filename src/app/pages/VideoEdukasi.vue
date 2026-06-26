@@ -3,11 +3,8 @@ import { ref, computed, onMounted } from "vue";
 import {
   Play,
   X,
-  Clock,
-  Eye,
   ChevronRight,
   Search,
-  ThumbsUp
 } from "lucide-vue-next";
 import type { Video } from '../data/videos'
 import { VIDEO_CATEGORIES } from '../data/videos'
@@ -34,6 +31,15 @@ const filtered = computed(() =>
 
 const featured = computed(() => filtered.value.find((v) => v.featured) ?? filtered.value[0] ?? null);
 const rest = computed(() => filtered.value.filter((v) => v.id !== featured.value?.id))
+
+function youtubeEmbedUrl(video: Video) {
+  const origin = window.location.origin
+  return `https://www.youtube.com/embed/${video.youtubeId}?autoplay=1&rel=0&playsinline=1&origin=${encodeURIComponent(origin)}`
+}
+
+function youtubeWatchUrl(video: Video) {
+  return `https://www.youtube.com/watch?v=${video.youtubeId}`
+}
 </script>
 
 <template>
@@ -113,21 +119,10 @@ const rest = computed(() => filtered.value.filter((v) => v.id !== featured.value
               <span class="bg-amber-500 text-white text-xs font-bold px-3 py-1 rounded-full">
                 {{ featured.tag }}
               </span>
-              <span class="bg-black/50 text-white text-xs px-2 py-1 rounded font-mono">
-                {{ featured.duration }}
-              </span>
             </div>
             <h3 class="text-white font-black text-xl lg:text-2xl leading-snug mb-2">
               {{ featured.title }}
             </h3>
-            <div class="flex items-center gap-4 text-slate-300 text-sm">
-              <span class="flex items-center gap-1">
-                <Eye class="w-4 h-4" /> {{ featured.views }}
-              </span>
-              <span class="flex items-center gap-1">
-                <ThumbsUp class="w-4 h-4" /> {{ featured.likes }}
-              </span>
-            </div>
           </div>
         </div>
       </div>
@@ -159,12 +154,9 @@ const rest = computed(() => filtered.value.filter((v) => v.id !== featured.value
                 </div>
               </div>
               <!-- Bottom meta -->
-              <div class="absolute bottom-3 left-3 right-3 flex items-center justify-between">
+              <div class="absolute bottom-3 left-3 right-3 flex items-center justify-start">
                 <span class="bg-white/20 backdrop-blur-sm text-white text-xs font-semibold px-2.5 py-1 rounded-full">
                   {{ video.tag }}
-                </span>
-                <span class="bg-black/70 text-white text-xs px-2 py-1 rounded font-mono">
-                  {{ video.duration }}
                 </span>
               </div>
             </div>
@@ -173,17 +165,6 @@ const rest = computed(() => filtered.value.filter((v) => v.id !== featured.value
               <h3 class="text-slate-800 font-bold text-sm leading-snug mb-3 line-clamp-2 group-hover:text-amber-600 transition-colors">
                 {{ video.title }}
               </h3>
-              <div class="flex items-center justify-between text-xs text-slate-400">
-                <span class="flex items-center gap-1">
-                  <Eye class="w-3.5 h-3.5" /> {{ video.views }}
-                </span>
-                <span class="flex items-center gap-1">
-                  <ThumbsUp class="w-3.5 h-3.5" /> {{ video.likes }}
-                </span>
-                <span class="flex items-center gap-1">
-                  <Clock class="w-3.5 h-3.5" /> {{ video.duration }}
-                </span>
-              </div>
             </div>
           </div>
         </div>
@@ -210,44 +191,40 @@ const rest = computed(() => filtered.value.filter((v) => v.id !== featured.value
             @click.stop
           >
             <!-- Video Player -->
-            <div class="relative bg-black aspect-video flex items-center justify-center">
+            <div class="relative bg-black aspect-video">
+              <iframe
+                v-if="selectedVideo.youtubeId"
+                :src="youtubeEmbedUrl(selectedVideo)"
+                :title="selectedVideo.title"
+                class="absolute inset-0 w-full h-full"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen
+              />
               <img
+                v-else
                 :src="selectedVideo.img"
                 :alt="selectedVideo.title"
                 class="absolute inset-0 w-full h-full object-cover opacity-40"
               />
-              <div class="relative z-10 text-center">
-                <div class="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-white/30">
-                  <Play class="w-10 h-10 text-white fill-white ml-1" />
-                </div>
-                <p class="text-white/80 text-sm">Video akan diputar dari sumber aslinya</p>
-                <p class="text-white/50 text-xs mt-1">
-                  (Ini adalah pratinjau desain — YouTube embed akan ditanam di sini)
-                </p>
-              </div>
               <button
                 @click="selectedVideo = null"
-                class="absolute top-4 right-4 z-20 w-8 h-8 bg-white/20 hover:bg-white/40 rounded-full flex items-center justify-center transition-colors"
+                class="absolute top-4 right-4 z-20 w-8 h-8 bg-black/50 hover:bg-black/70 rounded-full flex items-center justify-center transition-colors"
               >
                 <X class="w-4 h-4 text-white" />
               </button>
-              <!-- Duration badge -->
-              <div class="absolute bottom-4 right-4 bg-black/70 text-white text-xs px-2 py-1 rounded-md font-mono">
-                {{ selectedVideo.duration }}
-              </div>
             </div>
             <div class="p-5">
               <h3 class="text-white font-bold text-lg mb-2">{{ selectedVideo.title }}</h3>
-              <div class="flex items-center gap-4 text-slate-400 text-sm">
-                <span class="flex items-center gap-1">
-                  <Eye class="w-4 h-4" /> {{ selectedVideo.views }} tayangan
-                </span>
-                <span class="flex items-center gap-1">
-                  <ThumbsUp class="w-4 h-4" /> {{ selectedVideo.likes }} suka
-                </span>
-                <span class="flex items-center gap-1">
-                  <Clock class="w-4 h-4" /> {{ selectedVideo.duration }}
-                </span>
+              <div class="flex justify-end">
+                <a
+                  v-if="selectedVideo.youtubeId"
+                  :href="youtubeWatchUrl(selectedVideo)"
+                  target="_blank"
+                  rel="noreferrer"
+                  class="inline-flex items-center justify-center rounded-xl bg-white px-4 py-2 text-xs font-bold text-slate-900 hover:bg-slate-100 transition-colors"
+                >
+                  Buka di YouTube
+                </a>
               </div>
             </div>
           </div>

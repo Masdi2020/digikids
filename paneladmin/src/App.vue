@@ -3,13 +3,26 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { onMounted, watch } from 'vue'
 import { RouterView } from 'vue-router'
 import { useAdminStore } from './stores/adminStore'
+import { useAuthStore } from './stores/authStore'
 
 const adminStore = useAdminStore()
+const authStore = useAuthStore()
 
 onMounted(() => {
-  adminStore.loadAll()
+  if (authStore.isAuthenticated) {
+    adminStore.loadAll()
+  }
 })
+
+watch(
+  () => authStore.isAuthenticated,
+  (isAuthenticated) => {
+    if (isAuthenticated) {
+      adminStore.loadAll()
+    }
+  },
+)
 </script>

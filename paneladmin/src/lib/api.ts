@@ -1,22 +1,33 @@
 import type { Article } from '../data/articles'
 import type { Video } from '../data/videos'
 import type { ScreenTimeItem, ParentalStep, FaqItem, FamilyRule } from '../data/panduan'
+import { isSupabaseConfigured, supabase } from './supabase'
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL?.trim()
 
 export const isApiConfigured = Boolean(apiBaseUrl)
+
+async function getAuthHeaders() {
+  if (!isSupabaseConfigured || !supabase) return {}
+
+  const { data } = await supabase.auth.getSession()
+  const token = data.session?.access_token
+  return token ? { Authorization: `Bearer ${token}` } : {}
+}
 
 async function requestJson<T>(path: string, options?: RequestInit): Promise<T> {
   if (!apiBaseUrl) {
     throw new Error('API base URL is not configured.')
   }
 
+  const authHeaders = await getAuthHeaders()
   const response = await fetch(`${apiBaseUrl}${path}`, {
+    ...options,
     headers: {
       'Content-Type': 'application/json',
+      ...authHeaders,
       ...(options?.headers || {}),
     },
-    ...options,
   })
 
   if (!response.ok) {
@@ -34,9 +45,11 @@ export async function uploadImage(file: File): Promise<string> {
 
   const formData = new FormData()
   formData.append('file', file)
+  const authHeaders = await getAuthHeaders()
 
   const response = await fetch(`${apiBaseUrl}/api/uploads/image`, {
     method: 'POST',
+    headers: authHeaders,
     body: formData,
   })
 
