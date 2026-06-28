@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { ref, onMounted, onBeforeUnmount } from 'vue'
+import heic2any from 'heic2any'
 import {
   MapPin,
   Target,
@@ -9,64 +11,163 @@ import {
   Mail,
   Github,
   Globe,
-  Award,
-  BookOpen,
-  Video,
 } from 'lucide-vue-next'
 
-const teamImg1 =
-  'https://images.unsplash.com/photo-1601655781320-205e34c94eb1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=300'
-const teamImg2 =
-  'https://images.unsplash.com/photo-1765648636207-22c892e8fae9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=300'
-const teamImg3 =
-  'https://images.unsplash.com/photo-1732210038531-9cefab37885a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=300'
-const teamImg4 =
-  'https://images.unsplash.com/photo-1609173706484-78700d4ed198?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=300'
-const teamImg5 =
-  'https://images.unsplash.com/photo-1758687126549-3bfd368e59a8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=300'
+const fallbackImg = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Crect width='200' height='200' fill='%23e2e8f0'/%3E%3Ccircle cx='100' cy='78' r='40' fill='%2394a3b8'/%3E%3Cpath d='M36 196c0-35 28-64 64-64s64 29 64 64z' fill='%2394a3b8'/%3E%3C/svg%3E"
 
-const teamMembers = [
+const localImages = import.meta.glob('../../assets/images/*', {
+  eager: true,
+  import: 'default',
+  query: '?url',
+}) as Record<string, string>
+
+function resolveImg(src: string): string {
+  if (!src) return fallbackImg
+  if (/^(http:|data:|blob:)/.test(src)) return src
+  const match = Object.entries(localImages).find(([path]) => path.endsWith('/' + src))
+  return match ? match[1] : fallbackImg
+}
+
+const handleImgError = (e: Event) => {
+  const target = e.target as HTMLImageElement
+  if (target.src !== fallbackImg) {
+    target.src = fallbackImg
+  }
+}
+
+const teamImg1 = resolveImg('Wildan.jpg')
+const teamImg2 = resolveImg('Brikal.jpg')
+const teamImg3 = resolveImg('Daniel.JPG')
+const teamImg4 = resolveImg('Dimas.JPG')
+const teamImg5 = resolveImg('Zaki.HEIC')
+const teamImg6 = resolveImg('Zaka.jpg')
+const teamImg7 = resolveImg('Ajwar.jpg')
+const teamImg8 = resolveImg('Khoirullah.jpg')
+const teamImg9 = resolveImg('Putri.jpg')
+
+const teamMembers = ref([
   {
-    name: 'Ahmad Rizky Pratama',
-    role: 'Project Lead & Backend Developer',
-    desc: 'Bertanggung jawab atas arsitektur sistem, pengembangan API Node.js/Express, dan manajemen database Supabase.',
+    name: 'Wildan',
+    role: '-',
+    desc: '-',
     img: teamImg1,
-    badges: ['Node.js', 'Supabase', 'Express'],
+    imgPos: 'center',
+    badges: [],
     icon: '👨‍💻',
   },
   {
-    name: 'Siti Nurhaliza',
-    role: 'Frontend Developer & UI Designer',
-    desc: 'Memimpin pengembangan antarmuka menggunakan Vue.js dan Tailwind CSS, serta mengimplementasikan desain yang responsif.',
+    name: 'Brikal',
+    role: '-',
+    desc: '-',
     img: teamImg2,
-    badges: ['Vue.js', 'Tailwind CSS', 'Figma'],
+    imgPos: 'center',
+    badges: [],
     icon: '👩‍🎨',
   },
   {
-    name: 'Budi Santoso',
-    role: 'Content Researcher & Writer',
-    desc: 'Meriset dan menyusun konten edukasi tentang gadget, kesehatan digital anak, serta panduan berbasis bukti ilmiah.',
+    name: 'Daniel',
+    role: '-',
+    desc: '-',
     img: teamImg3,
-    badges: ['Riset', 'Konten', 'SEO'],
+    imgPos: 'center',
+    badges: [],
     icon: '✍️',
   },
   {
-    name: 'Dewi Anggraini',
-    role: 'Media & Video Production',
-    desc: 'Memproduksi konten video edukasi, mengelola aset media visual, dan mengintegrasikan Cloudinary untuk manajemen gambar.',
+    name: 'Dimas',
+    role: '-',
+    desc: '-',
     img: teamImg4,
-    badges: ['Cloudinary', 'Video', 'Editing'],
+    imgPos: 'center',
+    badges: [],
     icon: '🎬',
   },
   {
-    name: 'Farhan Maulana',
-    role: 'QA & Community Outreach',
-    desc: 'Memastikan kualitas website, melakukan testing lintas platform, dan menjadi jembatan komunikasi dengan warga RT 045.',
+    name: 'Zaki',
+    role: '-',
+    desc: '-',
     img: teamImg5,
-    badges: ['QA Testing', 'Community', 'Outreach'],
+    imgPos: 'center',
+    badges: [],
     icon: '🤝',
   },
-]
+  {
+    name: 'Zaka',
+    role: '-',
+    desc: '-',
+    img: teamImg6,
+    imgPos: 'center',
+    badges: [],
+    icon: '🤝',
+  },
+  {
+    name: 'Ajwar',
+    role: '-',
+    desc: '-',
+    img: teamImg7,
+    imgPos: 'center',
+    badges: [],
+    icon: '🤝',
+  },
+  {
+    name: 'Khoirullah',
+    role: '-',
+    desc: '-',
+    img: teamImg8,
+    imgPos: 'center',
+    badges: [],
+    icon: '🤝',
+  },
+  {
+    name: 'Putri',
+    role: '-',
+    desc: '-',
+    img: teamImg9,
+    imgPos: 'center',
+    badges: [],
+    icon: '🤝',
+  },
+])
+
+const objectUrls: string[] = [] // simpan untuk dibersihkan saat komponen di-unmount
+
+const isHeic = (url: string) => /\.(heic|heif)$/i.test(url)
+
+async function toDisplayableUrl(url: string): Promise<string> {
+  if (!url || url === fallbackImg) return url
+  try {
+    const res = await fetch(url)
+    const blob = await res.blob()
+
+    const looksHeic =
+      isHeic(url) || blob.type === 'image/heic' || blob.type === 'image/heif'
+
+    if (!looksHeic) return url // bukan HEIC, biarkan apa adanya
+
+    const out = await heic2any({ blob, toType: 'image/jpeg', quality: 0.85 })
+    const jpegBlob = (Array.isArray(out) ? out[0] : out) as Blob
+
+    const objectUrl = URL.createObjectURL(jpegBlob)
+    objectUrls.push(objectUrl)
+    return objectUrl
+  } catch (e) {
+    console.error('Gagal konversi HEIC:', url, e)
+    return url // gagal -> biarkan @error handler ambil alih ke fallback
+  }
+}
+
+onMounted(async () => {
+  await Promise.all(
+    teamMembers.value.map(async (m) => {
+      m.img = await toDisplayableUrl(m.img)
+    }),
+  )
+})
+
+// Bebaskan memori object URL saat komponen dilepas
+onBeforeUnmount(() => {
+  objectUrls.forEach((u) => URL.revokeObjectURL(u))
+})
 
 const values = [
   {
@@ -93,13 +194,6 @@ const values = [
     title: 'Untuk Semua Keluarga',
     desc: 'Dirancang untuk semua tingkat melek teknologi — dari orang tua yang kurang familiar hingga yang sudah tech-savvy.',
   },
-]
-
-const achievements = [
-  { icon: BookOpen, val: '50+', label: 'Artikel Edukasi' },
-  { icon: Video, val: '30+', label: 'Video Edukasi' },
-  { icon: Users, val: '500+', label: 'Keluarga Terjangkau' },
-  { icon: Award, val: '3', label: 'Penghargaan Komunitas' },
 ]
 
 const techStack = [
@@ -175,7 +269,6 @@ const techStack = [
             </div>
           </div>
 
-          <!-- Achievements -->
           <div class="grid grid-cols-2 gap-3">
             <div
               v-for="(item, i) in values"
@@ -238,9 +331,11 @@ const techStack = [
               class="relative h-48 overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200"
             >
               <img
-                :src="member.img"
+                :src="member.img || fallbackImg"
                 :alt="member.name"
-                class="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
+                :style="{ objectPosition: member.imgPos }"
+                @error="handleImgError"
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
 
               <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
