@@ -35,7 +35,7 @@ const handleImgError = (e: Event) => {
   }
 }
 
-const teamImg1 = resolveImg('Wildan.jpg')
+const teamImg1 = resolveImg('Wildan.jpeg')
 const teamImg2 = resolveImg('Brikal.jpg')
 const teamImg3 = resolveImg('Daniel.JPG')
 const teamImg4 = resolveImg('Dimas.JPG')
@@ -47,85 +47,94 @@ const teamImg9 = resolveImg('Putri.jpg')
 
 const teamMembers = ref([
   {
-    name: 'Wildan',
-    role: '-',
-    desc: '-',
+    name: 'Abdullah Adiwarman Wildan',
+    role: 'Secretary & Administration',
+    desc: 'Mengelola administrasi tim, melakukan notulensi rapat, serta mendokumentasikan hasil rapat',
     img: teamImg1,
-    imgPos: 'center',
-    badges: [],
-    icon: '👨‍💻',
+    imgPos: '50% 34%',
+    zoom: 1,
+    badges: ['Administrasi', 'Notulensi', 'Dokumentasi'],
+    icon: '🗂️',
   },
   {
-    name: 'Brikal',
-    role: '-',
-    desc: '-',
+    name: 'Brikal Adhitama Santoso',
+    role: 'Video Editor & Videographer',
+    desc: 'Bertanggung jawab pada proses pengambilan gambar, pengeditan video, dan menghasilkan dokumentasi video yang menarik dan informatif',
     img: teamImg2,
-    imgPos: 'center',
-    badges: [],
-    icon: '👩‍🎨',
-  },
-  {
-    name: 'Daniel',
-    role: '-',
-    desc: '-',
-    img: teamImg3,
-    imgPos: 'center',
-    badges: [],
-    icon: '✍️',
-  },
-  {
-    name: 'Dimas',
-    role: '-',
-    desc: '-',
-    img: teamImg4,
-    imgPos: 'center',
-    badges: [],
+    imgPos: '50% 45%',
+    zoom: 1,
+    badges: ['Editing', 'Videografi', 'Dokumentasi'],
     icon: '🎬',
   },
   {
-    name: 'Zaki',
-    role: '-',
-    desc: '-',
+    name: 'Daniel Belawa Koten',
+    role: 'Project Leader & Backend Developer',
+    desc: 'Memimpin jalannya proyek, mengatur pembagian tugas, serta mengembangkan sistem backend agar aplikasi berjalan dengan baik',
+    img: teamImg3,
+    imgPos: '50% 0%',
+    zoom: 1,
+    badges: ['Leadership', 'Backend', 'API'],
+    icon: '🚀',
+  },
+  {
+    name: 'Dimas Ramadhani',
+    role: 'Frontend Developer & Treasurer',
+    desc: 'Mengembangkan antarmuka website yang responsif dan mudah digunakan, dan juga mengelola anggaran serta keuangan tim',
+    img: teamImg4,
+    imgPos: '50% 30%',
+    zoom: 1,
+    badges: ['Frontend', 'UI/UX', 'Keuangan'],
+    icon: '💻',
+  },
+  {
+    name: 'Muhammad Zaki Afriza',
+    role: 'Documentation & Logistics',
+    desc: 'Mengelola dokumentasi kegiatan dan memastikan kebutuhan logistik selama pelaksanaan proyek',
     img: teamImg5,
-    imgPos: 'center',
-    badges: [],
-    icon: '🤝',
+    imgPos: '50% 55%',
+    zoom: 1,
+    badges: ['Dokumentasi', 'Logistik', 'Koordinasi'],
+    icon: '📷',
   },
   {
-    name: 'Zaka',
-    role: '-',
-    desc: '-',
+    name: 'Zakaria Fattawari',
+    role: 'Vice Project Leader & Support Developer',
+    desc: 'Membantu ketua pada koordinasi tim serta membantu proses pengembangan website pada berbagai kebutuhan teknis',
     img: teamImg6,
-    imgPos: 'center',
-    badges: [],
+    imgPos: '50% 20%',
+    zoom: 1,
+    badges: ['Leadership', 'Support', 'Development'],
     icon: '🤝',
   },
   {
-    name: 'Ajwar',
-    role: '-',
-    desc: '-',
+    name: 'Ajwar Alwan',
+    role: 'Equipment & Talent',
+    desc: "Menyiapkan dan mengelola seluruh perlengkapan yang dibutuhkan selama kegiatan serta berperan sebagai talent dalam produksi konten",
     img: teamImg7,
-    imgPos: 'center',
-    badges: [],
-    icon: '🤝',
+    imgPos: '50% 45%',
+    zoom: 1,
+    badges: ["Perlengkapan", "Talent", "Produksi"],
+    icon: '🛠️',
   },
   {
-    name: 'Khoirullah',
-    role: '-',
-    desc: '-',
+    name: 'Muhammad Khoirullah',
+    role: 'Content Researcher & Talent',
+    desc: 'Melakukan riset materi untuk memastikan informasi yang digunakan akurat serta berpartisipasi sebagai talent dalam pembuatan konten',
     img: teamImg8,
-    imgPos: 'center',
-    badges: [],
-    icon: '🤝',
+    imgPos: '50% 35%',
+    zoom: 1,
+    badges: ["Riset", "Konten", "Talent"],
+    icon: '📚',
   },
   {
-    name: 'Putri',
-    role: '-',
-    desc: '-',
+    name: 'Putri Afrida',
+    role: 'Consumption & Talent',
+    desc: 'Mengatur kebutuhan konsumsi selama kegiatan berlangsung sekaligus berkontribusi sebagai talent dalam proses produksi konten',
     img: teamImg9,
-    imgPos: 'center',
-    badges: [],
-    icon: '🤝',
+    imgPos: '50% 64%',
+    zoom: 2,
+    badges: ["Konsumsi", "Talent", "Kolaborasi"],
+    icon: '🍱',
   },
 ])
 
@@ -142,7 +151,7 @@ async function toDisplayableUrl(url: string): Promise<string> {
     const looksHeic =
       isHeic(url) || blob.type === 'image/heic' || blob.type === 'image/heif'
 
-    if (!looksHeic) return url // bukan HEIC, biarkan apa adanya
+    if (!looksHeic) return url
 
     const out = await heic2any({ blob, toType: 'image/jpeg', quality: 0.85 })
     const jpegBlob = (Array.isArray(out) ? out[0] : out) as Blob
@@ -152,7 +161,7 @@ async function toDisplayableUrl(url: string): Promise<string> {
     return objectUrl
   } catch (e) {
     console.error('Gagal konversi HEIC:', url, e)
-    return url // gagal -> biarkan @error handler ambil alih ke fallback
+    return url
   }
 }
 
@@ -164,7 +173,6 @@ onMounted(async () => {
   )
 })
 
-// Bebaskan memori object URL saat komponen dilepas
 onBeforeUnmount(() => {
   objectUrls.forEach((u) => URL.revokeObjectURL(u))
 })
@@ -333,7 +341,10 @@ const techStack = [
               <img
                 :src="member.img || fallbackImg"
                 :alt="member.name"
-                :style="{ objectPosition: member.imgPos }"
+                :style="{
+                    objectPosition: member.imgPos,
+                    transform: `scale(${member.zoom})`
+                  }"
                 @error="handleImgError"
                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
@@ -426,7 +437,7 @@ const techStack = [
 
           <div class="flex flex-wrap justify-center gap-3">
             <a
-              href="mailto:bijakgadget@rt045karangjoang.id"
+              href="mailto:digikidsinsos@gmail.com"
               class="inline-flex items-center gap-2 bg-white text-sky-700 font-bold px-5 py-2.5 rounded-xl hover:bg-sky-50 transition-colors text-sm"
             >
               <Mail class="w-4 h-4" />
@@ -434,7 +445,7 @@ const techStack = [
             </a>
 
             <a
-              href="#"
+              href="https://maps.app.goo.gl/iUZrdbKesGcognsx6"
               class="inline-flex items-center gap-2 bg-white/15 text-white border border-white/30 font-semibold px-5 py-2.5 rounded-xl hover:bg-white/25 transition-colors text-sm"
             >
               <Globe class="w-4 h-4" />
